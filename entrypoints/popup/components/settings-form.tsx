@@ -1,6 +1,6 @@
 import { useSettings } from "@/entrypoints/popup/hooks";
 
-function App() {
+function SettingsForm() {
   const { settings, setSettings } = useSettings();
   const handleToggleEnabled = () => {
     setSettings((settings) => ({ ...settings, enabled: !settings.enabled }));
@@ -21,4 +21,4 @@ function App() {
   );
 }
 
-export default App;
+export { SettingsForm };
