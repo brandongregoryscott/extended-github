@@ -4,7 +4,7 @@ import {
   Settings,
   updateSettings,
 } from "@/utilities/settings";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const useSettings = () => {
   const [settings, _setSettings] = useState<Settings>(DEFAULT_SETTINGS);

@@ -1,18 +1,21 @@
 type FormFieldProps = {
+  inputId: string;
   label: string;
+  description?: string;
   children: React.ReactNode;
 };
 
 function FormField(props: FormFieldProps) {
-  const { label, children } = props;
+  const { inputId, label, description, children } = props;
 
   return (
-    <div className="display-flex-column gap-sm">
-      <label>
-        <strong>{label}</strong>
-      </label>
+    <label className="display-flex-column gap-sm" htmlFor={inputId}>
+      <strong>{label}</strong>
+      {description != null && (
+        <span className="font-size-sm">{description}</span>
+      )}
       {children}
-    </div>
+    </label>
   );
 }
 
