@@ -1,39 +1,23 @@
-import { useState, useEffect } from "react";
-import "./App.css";
-import {
-  getSettings,
-  updateSettings,
-  Settings,
-  DEFAULT_SETTINGS,
-} from "@/utilities/settings";
+import { useSettings } from "@/entrypoints/popup/hooks";
 
 function App() {
-  const [settings, _setSettings] = useState<Settings>(DEFAULT_SETTINGS);
-
-  const setSettings = async (updatedSettings: Partial<Settings>) => {
-    const mergedSettings = { ...settings, ...updatedSettings };
-    _setSettings(mergedSettings);
-    await updateSettings(mergedSettings);
-  };
-
-  useEffect(() => {
-    getSettings().then(_setSettings);
-  }, []);
-
-  const handleToggleEnabled = async () => {
-    const updatedSettings = { ...settings, enabled: !settings.enabled };
-    await updateSettings(updatedSettings);
-    setSettings(updatedSettings);
+  const { settings, setSettings } = useSettings();
+  const handleToggleEnabled = () => {
+    setSettings((settings) => ({ ...settings, enabled: !settings.enabled }));
   };
 
   return (
-    <>
-      <div className="card">
-        <button onClick={handleToggleEnabled}>
-          count is {settings.enabled.toString()}
-        </button>
-      </div>
-    </>
+    <div className="padding-lg">
+      <h2 className="text-align-center">Extended GitHub</h2>
+      <label className="display-flex gap-sm user-select-none">
+        <input
+          type="checkbox"
+          onChange={handleToggleEnabled}
+          checked={settings.enabled}
+        />
+        {settings.enabled ? "Enabled" : "Disabled"}
+      </label>
+    </div>
   );
 }
 
