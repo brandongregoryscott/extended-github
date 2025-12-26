@@ -61,3 +61,8 @@ textarea {
   font-size: 12px;
   font-weight: 300;
 }
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

@@ -24,6 +24,8 @@ function SettingsForm() {
     setSettings({ includedOrganizations: splitCsv(value) });
   };
 
+  const disabled = !enabled;
+
   return (
     <div className="display-flex-column gap-md padding-lg">
       <h2 className="text-align-center">Extended GitHub</h2>
@@ -44,11 +46,13 @@ function SettingsForm() {
       </FormField>
       <FormField
         inputId={InputId.IncludedOrganizations}
+        disabled={disabled}
         label="Included organizations"
         description="Comma-separated list of organizations to enable the extension on. If empty, the extension will work on any organization."
       >
         <textarea
           id={InputId.IncludedOrganizations}
+          disabled={disabled}
           onChange={handleIncludedOrganizationsChange}
           value={includedOrganizations}
         />
