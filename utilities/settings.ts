@@ -1,5 +1,5 @@
 import { parsePullRequestPath } from "@/utilities/route-utils";
-import { isEmpty } from "lodash-es";
+import { compact, isEmpty } from "lodash-es";
 
 type Settings = {
   /**
@@ -18,12 +18,16 @@ const DEFAULT_SETTINGS: Settings = {
   includedOrganizations: [],
 };
 
-async function updateSettings(settings: Partial<Settings>) {
+async function updateSettings(settings: Partial<Settings>): Promise<void> {
   return browser.storage.sync.set<Settings>(settings);
 }
 
-function getSettings() {
-  return browser.storage.sync.get<Settings>(DEFAULT_SETTINGS);
+async function getSettings(): Promise<Settings> {
+  let settings = await browser.storage.sync.get<Settings>(DEFAULT_SETTINGS);
+  return {
+    ...settings,
+    includedOrganizations: compact(settings.includedOrganizations),
+  };
 }
 
 async function isEnabled(): Promise<boolean> {
