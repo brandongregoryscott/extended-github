@@ -1,5 +1,7 @@
 import { FormField } from "@/entrypoints/popup/components/form-field";
 import { useSettings } from "@/entrypoints/popup/hooks";
+import { joinCsv, splitCsv } from "@/utilities/core-utils";
+import React from "react";
 
 const InputId = {
   Enabled: "input-enabled",
@@ -8,8 +10,18 @@ const InputId = {
 
 function SettingsForm() {
   const { settings, setSettings } = useSettings();
-  const handleToggleEnabled = () => {
-    setSettings((settings) => ({ ...settings, enabled: !settings.enabled }));
+  const { enabled } = settings;
+  const includedOrganizations = joinCsv(settings.includedOrganizations);
+  const handleToggleEnabled = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const enabled = event.target.checked;
+    setSettings({ enabled });
+  };
+
+  const handleIncludedOrganizationsChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const value = event.target.value;
+    setSettings({ includedOrganizations: splitCsv(value) });
   };
 
   return (
@@ -25,9 +37,9 @@ function SettingsForm() {
             id={InputId.Enabled}
             type="checkbox"
             onChange={handleToggleEnabled}
-            checked={settings.enabled}
+            checked={enabled}
           />
-          {settings.enabled ? "Enabled" : "Disabled"}
+          {enabled ? "Enabled" : "Disabled"}
         </label>
       </FormField>
       <FormField
@@ -35,7 +47,11 @@ function SettingsForm() {
         label="Included organizations"
         description="Comma-separated list of organizations to enable the extension on. If empty, the extension will work on any organization."
       >
-        <textarea id={InputId.IncludedOrganizations}></textarea>
+        <textarea
+          id={InputId.IncludedOrganizations}
+          onChange={handleIncludedOrganizationsChange}
+          value={includedOrganizations}
+        />
       </FormField>
     </div>
   );
