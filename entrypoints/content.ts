@@ -7,11 +7,16 @@ import {
   isAuthenticatedUserAssigned,
   toggleAssigneesPopover,
 } from "@/utilities/dom-utils";
+import { isEnabled } from "@/utilities/settings";
 
 const PULL_REQUEST_URL_PATTERN = "*://github.com/*/*/pull/*";
 const watchPattern = new MatchPattern(PULL_REQUEST_URL_PATTERN);
 
-async function checkPullRequestsPage() {
+async function maybeAssignSelfToPullRequest() {
+  if (!(await isEnabled())) {
+    return;
+  }
+
   const authenticatedUser = getAuthenticatedUserName();
   const pullRequestAuthor = getPullRequestAuthorUserName();
   if (
@@ -47,11 +52,11 @@ async function checkPullRequestsPage() {
 const contentScript = defineContentScript({
   matches: [PULL_REQUEST_URL_PATTERN],
   async main(ctx) {
-    await checkPullRequestsPage();
+    await maybeAssignSelfToPullRequest();
 
     ctx.addEventListener(window, "wxt:locationchange", async ({ newUrl }) => {
       if (watchPattern.includes(newUrl)) {
-        await checkPullRequestsPage();
+        await maybeAssignSelfToPullRequest();
       }
     });
   },
