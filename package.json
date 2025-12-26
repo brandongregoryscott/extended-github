@@ -1,6 +1,6 @@
 {
-  "name": "wxt-react-starter",
-  "description": "manifest.json description",
+  "name": "extended-github",
+  "description": "Browser extension with additional GitHub functionality",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -24,6 +24,7 @@
     "@types/lodash-es": "4.17.12",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
+    "@wxt-dev/auto-icons": "1.1.0",
     "@wxt-dev/module-react": "1.1.5",
     "typescript": "5.9.3",
     "wxt": "0.20.13"
