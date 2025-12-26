@@ -1,12 +1,19 @@
 import { defineConfig } from "wxt";
 
+const DESCRIPTION = "Browser extension with additional GitHub functionality";
+
 // See https://wxt.dev/api/config.html
-export default defineConfig({
+const config = defineConfig({
   modules: ["@wxt-dev/module-react", "@wxt-dev/auto-icons"],
   outDir: "dist",
   manifest: {
     name: "Extended GitHub",
-    description: "Browser extension with additional GitHub functionality",
+    action: {
+      default_title: DESCRIPTION,
+    },
+    description: DESCRIPTION,
     permissions: ["storage"],
   },
 });
+
+export default config;
