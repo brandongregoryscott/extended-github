@@ -28,7 +28,7 @@
     "packageManager": "npm@11.6.0",
     "private": true,
     "scripts": {
-        "build": "wxt build",
+        "build": "tsc --noEmit && wxt build",
         "build:firefox": "wxt build -b firefox",
         "compile": "tsc --noEmit",
         "dev": "wxt",
