@@ -1,29 +1,11 @@
 {
-    "name": "extended-github",
-    "description": "Browser extension with additional GitHub functionality",
-    "private": true,
-    "version": "0.0.0",
-    "type": "module",
-    "scripts": {
-        "dev": "wxt",
-        "dev:firefox": "wxt -b firefox",
-        "build": "wxt build",
-        "build:firefox": "wxt build -b firefox",
-        "format": "prettier --check \"**/*.{json,yml,js,ts,tsx,md}\"",
-        "format:fix": "prettier --write \"**/*.{json,yml,js,ts,tsx,md}\"",
-        "lint": "eslint",
-        "lint:fix": "eslint --fix",
-        "zip": "wxt zip",
-        "zip:firefox": "wxt zip -b firefox",
-        "compile": "tsc --noEmit",
-        "postinstall": "wxt prepare"
-    },
     "dependencies": {
         "lodash-es": "4.17.22",
         "react": "19.2.3",
         "react-dom": "19.2.3",
         "simpledotcss": "2.3.7"
     },
+    "description": "Browser extension with additional GitHub functionality",
     "devDependencies": {
         "@stylistic/eslint-plugin": "5.6.1",
         "@types/lodash-es": "4.17.12",
@@ -41,5 +23,25 @@
         "typescript": "5.9.3",
         "typescript-eslint": "8.50.1",
         "wxt": "0.20.13"
-    }
+    },
+    "name": "extended-github",
+    "packageManager": "npm@11.6.0",
+    "private": true,
+    "scripts": {
+        "build": "wxt build",
+        "build:firefox": "wxt build -b firefox",
+        "compile": "tsc --noEmit",
+        "dev": "wxt",
+        "dev:firefox": "wxt -b firefox",
+        "format": "prettier --check \"**/*.{json,yml,js,ts,tsx,md}\"",
+        "format:fix": "prettier --write \"**/*.{json,yml,js,ts,tsx,md}\"",
+        "lint": "eslint",
+        "lint:fix": "eslint --fix",
+        "postinstall": "wxt prepare",
+        "test": "echo 'TODO'",
+        "zip": "wxt zip",
+        "zip:firefox": "wxt zip -b firefox"
+    },
+    "type": "module",
+    "version": "0.0.0"
 }
