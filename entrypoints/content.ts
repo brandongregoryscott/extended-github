@@ -62,4 +62,5 @@ const contentScript = defineContentScript({
   },
 });
 
+// eslint-disable-next-line collation/no-default-export -- This module needs to be default exported
 export default contentScript;

@@ -115,12 +115,4 @@ function assignSelfViaPopover(): void {
   authenticatedUserListItem?.click();
 }
 
-export {
-  isAuthenticatedUserAssigned,
-  getAuthenticatedUserName,
-  getPullRequestAuthorUserName,
-  findAssignYourselfButton,
-  toggleAssigneesPopover,
-  assignSelfViaPopover,
-  findElementByInnerText,
-};
+export { assignSelfViaPopover, findAssignYourselfButton, findElementByInnerText, getAuthenticatedUserName, getPullRequestAuthorUserName, isAuthenticatedUserAssigned, toggleAssigneesPopover };

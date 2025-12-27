@@ -45,4 +45,4 @@ async function isEnabled(): Promise<boolean> {
 }
 
 export type { Settings };
-export { DEFAULT_SETTINGS, updateSettings, isEnabled, getSettings };
+export { DEFAULT_SETTINGS, getSettings, isEnabled, updateSettings };

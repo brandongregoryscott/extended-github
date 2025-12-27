@@ -16,4 +16,5 @@ const config = defineConfig({
   },
 });
 
+// eslint-disable-next-line collation/no-default-export -- This module needs to be default exported
 export default config;

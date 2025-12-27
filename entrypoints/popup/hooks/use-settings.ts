@@ -1,7 +1,7 @@
+import type { Settings } from "@/utilities/settings";
 import {
   DEFAULT_SETTINGS,
   getSettings,
-  Settings,
   updateSettings,
 } from "@/utilities/settings";
 import { useEffect, useState } from "react";
@@ -13,7 +13,7 @@ const useSettings = () => {
   }, []);
 
   const setSettings = async (
-    updatedSettings: Partial<Settings> | ((settings: Settings) => Settings)
+    updatedSettings: ((settings: Settings) => Settings) | Partial<Settings>
   ) => {
     const mergedSettings: Settings = {
       ...settings,

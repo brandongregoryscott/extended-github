@@ -1,7 +1,7 @@
 import { compact, isString, uniq } from "lodash-es";
 
 function classNames(
-  ...inputClassNames: Array<string | Record<string, boolean | null | undefined>>
+  ...inputClassNames: Array<Record<string, boolean | null | undefined> | string>
 ): string {
   const truthyClassNames = inputClassNames.flatMap((className) => {
     if (isString(className)) {
