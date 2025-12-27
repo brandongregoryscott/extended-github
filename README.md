@@ -31,7 +31,6 @@ You should now have a `dist` folder with a zip file and an unzipped `chrome-mv3`
 
 ![](./docs/demos/chrome-extension-manager.png)
 
-
 ### Disclaimer
 
 This extension is not affiliated with GitHub, Inc. in any way. Use the extension at your own risk.
