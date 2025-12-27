@@ -4,101 +4,122 @@ import collationPlugin from "eslint-plugin-collation";
 import stylisticPlugin from "@stylistic/eslint-plugin";
 import perfectionistPlugin from "eslint-plugin-perfectionist";
 import importPlugin from "eslint-plugin-import";
+import reactPlugin from "eslint-plugin-react";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
 
 const config = defineConfig([
-  { files: ["**/*.{ts,tsx}"] },
-  {
-    rules: {
-      curly: "error",
-      eqeqeq: [
-        "error",
-        "always",
-        {
-          null: "ignore",
+    { files: ["**/*.{ts,tsx}"] },
+    {
+        rules: {
+            curly: "error",
+            eqeqeq: [
+                "error",
+                "always",
+                {
+                    null: "ignore",
+                },
+            ],
         },
-      ],
     },
-  },
-  {
-    plugins: {
-      "@typescript-eslint": tsEslint.plugin,
-    },
-    languageOptions: {
-      parser: tsEslint.parser,
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
+    {
+        plugins: {
+            "@typescript-eslint": tsEslint.plugin,
         },
-        project: "tsconfig.json",
-      },
-    },
-    rules: {
-      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
-      "@typescript-eslint/consistent-type-exports": "error",
-      "@typescript-eslint/consistent-type-imports": "error",
-      "@typescript-eslint/strict-boolean-expressions": "error",
-    },
-  },
-  {
-    plugins: {
-      collation: collationPlugin,
-    },
-    rules: {
-      "collation/group-exports": "error",
-      "collation/no-default-export": "error",
-      "collation/no-inline-export": "error",
-      "collation/sort-exports": "error",
-    },
-  },
-  {
-    plugins: {
-      "@stylistic": stylisticPlugin,
-    },
-    rules: {
-      "@stylistic/padding-line-between-statements": [
-        "error",
-        {
-          blankLine: "always",
-          next: "export",
-          prev: "*",
+        languageOptions: {
+            parser: tsEslint.parser,
+            parserOptions: {
+                ecmaFeatures: {
+                    jsx: true,
+                },
+                project: "tsconfig.json",
+            },
         },
-        {
-          blankLine: "never",
-          next: "export",
-          prev: "export",
+        rules: {
+            "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+            "@typescript-eslint/consistent-type-exports": "error",
+            "@typescript-eslint/consistent-type-imports": "error",
+            "@typescript-eslint/strict-boolean-expressions": "error",
         },
-        {
-          blankLine: "always",
-          next: "*",
-          prev: "import",
+    },
+    {
+        plugins: {
+            collation: collationPlugin,
         },
-        {
-          blankLine: "never",
-          next: "import",
-          prev: "import",
+        rules: {
+            "collation/group-exports": "error",
+            "collation/no-default-export": "error",
+            "collation/no-inline-export": "error",
+            "collation/sort-exports": "error",
         },
-      ],
     },
-  },
-  {
-    plugins: {
-      perfectionist: perfectionistPlugin,
+    {
+        plugins: {
+            "@stylistic": stylisticPlugin,
+        },
+        rules: {
+            "@stylistic/padding-line-between-statements": [
+                "error",
+                {
+                    blankLine: "always",
+                    next: "export",
+                    prev: "*",
+                },
+                {
+                    blankLine: "never",
+                    next: "export",
+                    prev: "export",
+                },
+                {
+                    blankLine: "always",
+                    next: "*",
+                    prev: "import",
+                },
+                {
+                    blankLine: "never",
+                    next: "import",
+                    prev: "import",
+                },
+            ],
+        },
     },
-    rules: {
-      "perfectionist/sort-intersection-types": "error",
-      "perfectionist/sort-union-types": "error",
+    {
+        plugins: {
+            perfectionist: perfectionistPlugin,
+        },
+        rules: {
+            "perfectionist/sort-intersection-types": "error",
+            "perfectionist/sort-union-types": "error",
+        },
     },
-  },
-  {
-    plugins: {
-      import: importPlugin,
+    {
+        plugins: {
+            import: importPlugin,
+        },
+        rules: {
+            "import/no-duplicates": "error",
+            "import/consistent-type-specifier-style": [
+                "error",
+                "prefer-top-level",
+            ],
+        },
     },
-    rules: {
-      "import/no-duplicates": "error",
-      "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+    {
+        plugins: {
+            react: reactPlugin,
+            "react-hooks": reactHooksPlugin,
+        },
+        settings: {
+            react: {
+                version: "detect",
+            },
+        },
+        extends: [
+            reactPlugin.configs.flat.recommended,
+            reactHooksPlugin.configs.flat.recommended,
+        ],
     },
-  },
-  { ignores: [".wxt", "dist", "eslint.config.mjs"] },
+
+    { ignores: [".wxt", "dist", "eslint.config.mjs"] },
 ]);
 
 export default config;
