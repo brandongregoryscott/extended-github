@@ -1,15 +1,13 @@
-import type { Settings } from "@/utilities/settings";
-import {
-    DEFAULT_SETTINGS,
-    getSettings,
-    updateSettings,
-} from "@/utilities/settings";
+import type { Settings } from "@/utilities/settings-utils";
+import { SettingsUtils } from "@/utilities/settings-utils";
 import { useEffect, useState } from "react";
 
 const useSettings = () => {
-    const [settings, _setSettings] = useState<Settings>(DEFAULT_SETTINGS);
+    const [settings, _setSettings] = useState<Settings>(
+        SettingsUtils.getDefaultSettings()
+    );
     useEffect(() => {
-        getSettings().then(_setSettings);
+        SettingsUtils.getSettings().then(_setSettings);
     }, []);
 
     const setSettings = async (
@@ -22,7 +20,7 @@ const useSettings = () => {
                 : updatedSettings),
         };
         _setSettings(mergedSettings);
-        await updateSettings(mergedSettings);
+        await SettingsUtils.updateSettings(mergedSettings);
     };
 
     return { settings, setSettings };

@@ -7,11 +7,11 @@ import {
 } from "@/enums";
 import { sleep } from "@/utilities/core-utils";
 import { DomUtils } from "@/utilities/dom-utils";
-import { isEnabled } from "@/utilities/settings";
+import { SettingsUtils } from "@/utilities/settings-utils";
 
 class PullRequests {
     static async autoAssignAuthor(): Promise<void> {
-        if (!(await isEnabled())) {
+        if (!(await SettingsUtils.isEnabled())) {
             return;
         }
 
