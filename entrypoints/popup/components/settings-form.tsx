@@ -73,9 +73,11 @@ function SettingsForm() {
             <Accordion label="Pull requests">
                 <div className={cn("display-flex-column", "gap-md")}>
                     <FormField
+                        disabled={disabled}
                         inputId={InputId.AutoAssignSelfToPullRequest}
                         label="Auto-assign self to pull requests">
                         <Checkbox
+                            disabled={disabled}
                             label="Enabled"
                             id={InputId.AutoAssignSelfToPullRequest}
                             onChange={handleAutoAssignSelfChange}
@@ -83,9 +85,11 @@ function SettingsForm() {
                         />
                     </FormField>
                     <FormField
+                        disabled={disabled}
                         inputId={InputId.AutoAssignAuthorToPullRequest}
                         label="Auto-assign author to pull requests">
                         <Checkbox
+                            disabled={disabled}
                             label="Enabled"
                             id={InputId.AutoAssignAuthorToPullRequest}
                             onChange={handleAutoAssignAuthorChange}

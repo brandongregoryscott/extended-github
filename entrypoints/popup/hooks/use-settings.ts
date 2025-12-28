@@ -14,7 +14,6 @@ const useSettings = () => {
 
     const setSettings = async (update: DeepPartial<Settings>) => {
         const mergedSettings = merge({}, settings, update);
-        console.log("mergedSettings", mergedSettings);
         _setSettings(mergedSettings);
         await SettingsUtils.updateSettings(mergedSettings);
     };
