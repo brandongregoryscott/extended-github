@@ -3,7 +3,7 @@ type FindElementByInnerTextOptions<T extends HTMLElement = HTMLElement> =
     | { innerText: string }
     | { type: keyof HTMLElementTagNameMap; innerText: string };
 
-class DomUtils {
+class DOMUtils {
     static findElementByInnerText<T extends HTMLElement = HTMLElement>(
         options: FindElementByInnerTextOptions<T>
     ): T | undefined {
@@ -21,6 +21,12 @@ class DomUtils {
         return this.findByInnerText(elements, innerText);
     }
 
+    static querySelector<T extends HTMLElement = HTMLElement>(
+        selectors: string
+    ): T | undefined {
+        return document.querySelector<T>(selectors) ?? undefined;
+    }
+
     static querySelectorAll<T extends HTMLElement = HTMLElement>(
         selectors: string
     ): T[] {
@@ -35,4 +41,4 @@ class DomUtils {
     }
 }
 
-export { DomUtils };
+export { DOMUtils };

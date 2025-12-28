@@ -1,14 +1,15 @@
+import type { UserGroup } from "@/enums";
 import {
     AttributeName,
     AttributeValue,
     ClassName,
     ElementText,
     ElementType,
+    UserGroups,
 } from "@/enums";
-import type { User } from "@/enums/users";
-import { Users } from "@/enums/users";
 import { sleep } from "@/utilities/core-utils";
-import { DomUtils } from "@/utilities/dom-utils";
+import { DOMUtils } from "@/utilities/dom-utils";
+import { GithubUtils } from "@/utilities/github-utils";
 import { SettingsUtils } from "@/utilities/settings-utils";
 
 class PullRequests {
@@ -18,39 +19,20 @@ class PullRequests {
             return;
         }
 
-        const authenticatedUser = getAuthenticatedUsername();
+        const authenticatedUser = GithubUtils.getAuthenticatedUsername();
         const pullRequestAuthor = getPullRequestAuthorUsername();
-        if (
-            authenticatedUser == null ||
-            pullRequestAuthor == null ||
-            authenticatedUser !== pullRequestAuthor
-        ) {
+        if (authenticatedUser == null || pullRequestAuthor == null) {
             return;
         }
 
-        const isAssigned = isAuthenticatedUserAssigned();
-        if (isAssigned) {
-            return;
+        if (enabled === UserGroups.Everyone) {
+            return autoAssignUser(pullRequestAuthor);
         }
 
-        const assignYourselfButton = findAssignYourselfButton();
-        if (assignYourselfButton != null) {
-            assignYourselfButton.click();
-            return;
-        }
-
-        toggleAssigneesPopover();
-        await sleep(250);
-        toggleAssigneesPopover();
-        await sleep(250);
-        toggleAssigneesPopover();
-        await sleep(1000);
-        assignSelfViaPopover();
-        await sleep(500);
-        toggleAssigneesPopover();
+        return autoAssignSelf();
     }
 
-    static async isAutoAssignAuthorEnabled(): Promise<false | User> {
+    static async isAutoAssignAuthorEnabled(): Promise<false | UserGroup> {
         const globallyEnabled = await SettingsUtils.isEnabled();
         if (!globallyEnabled) {
             return false;
@@ -59,39 +41,65 @@ class PullRequests {
         const settings = await SettingsUtils.getSettings();
 
         if (settings.features.pullRequest.autoAssignAuthorEnabled) {
-            return Users.Everyone;
+            return UserGroups.Everyone;
         }
 
         if (settings.features.pullRequest.autoAssignSelfEnabled) {
-            return Users.Self;
+            return UserGroups.Self;
         }
 
         return false;
     }
 }
 
+async function autoAssignUser(username: string): Promise<void> {
+    const authenticatedUser = GithubUtils.getAuthenticatedUsername();
+    const isAssigned = isUserAssigned(username);
+    if (isAssigned) {
+        return;
+    }
+
+    const assignYourselfButton = findAssignYourselfButton();
+    if (username === authenticatedUser && assignYourselfButton != null) {
+        assignYourselfButton.click();
+        return;
+    }
+
+    toggleAssigneesPopover();
+    await sleep(250);
+    toggleAssigneesPopover();
+    await sleep(250);
+    toggleAssigneesPopover();
+    await sleep(1000);
+    assignUserViaPopover(username);
+    await sleep(500);
+    toggleAssigneesPopover();
+}
+
+async function autoAssignSelf(): Promise<void> {
+    const authenticatedUsername = GithubUtils.getAuthenticatedUsername();
+    const pullRequestAuthor = getPullRequestAuthorUsername();
+
+    if (
+        authenticatedUsername == null ||
+        pullRequestAuthor == null ||
+        pullRequestAuthor !== authenticatedUsername
+    ) {
+        return;
+    }
+
+    return autoAssignUser(authenticatedUsername);
+}
+
 function findAssigneesPopoverTrigger(): HTMLElement | undefined {
     const selector =
         `[${AttributeName.DataMenuTrigger}="${AttributeValue.AssigneesSelectMenu}"]` as const;
-    return document.querySelector<HTMLElement>(selector) ?? undefined;
-}
-
-function getAuthenticatedUsername(): string | undefined {
-    const selector =
-        `${ElementType.Meta}[${AttributeName.Name}="${AttributeValue.UserLogin}"]` as const;
-    const authenticatedUserMeta = document.querySelector(selector);
-
-    if (authenticatedUserMeta == null) {
-        return undefined;
-    }
-
-    return (authenticatedUserMeta as any).content;
+    return DOMUtils.querySelector<HTMLElement>(selector);
 }
 
 function getPullRequestAuthorUsername(): string | undefined {
-    const authorLink = document.querySelector<HTMLElement>(
-        `${ElementType.Anchor}.${ClassName.Author}`
-    );
+    const selector = `${ElementType.Anchor}.${ClassName.Author}` as const;
+    const authorLink = DOMUtils.querySelector<HTMLElement>(selector);
     if (authorLink == null) {
         return undefined;
     }
@@ -101,26 +109,15 @@ function getPullRequestAuthorUsername(): string | undefined {
 
 function isUserAssigned(username: string): boolean {
     const selector = `${ElementType.Anchor}.${ClassName.Assignee}` as const;
-    const assignees = Array.from(
-        document.querySelectorAll<HTMLElement>(selector)
-    );
+    const assignees = DOMUtils.querySelectorAll<HTMLElement>(selector);
 
     return (
         assignees.find((assignee) => assignee.innerText === username) != null
     );
 }
 
-function isAuthenticatedUserAssigned(): boolean {
-    const authenticatedUserName = getAuthenticatedUsername();
-    if (authenticatedUserName == null) {
-        return false;
-    }
-
-    return isUserAssigned(authenticatedUserName);
-}
-
 function findAssignYourselfButton(): HTMLButtonElement | undefined {
-    return DomUtils.findElementByInnerText({
+    return DOMUtils.findElementByInnerText({
         type: ElementType.Button,
         innerText: ElementText.AssignYourself,
     });
@@ -130,9 +127,7 @@ function findAssigneeListItemByUsername(
     username: string
 ): HTMLElement | undefined {
     const selector = `.${ClassName.AssigneeListItemUsername}` as const;
-    const listItems = Array.from(
-        document.querySelectorAll<HTMLElement>(selector)
-    );
+    const listItems = DOMUtils.querySelectorAll(selector);
     return (
         listItems
             .find((element) => element.innerText === username)
@@ -140,27 +135,9 @@ function findAssigneeListItemByUsername(
     );
 }
 
-function findAuthenticatedAssigneeListItem(): HTMLElement | undefined {
-    const username = getAuthenticatedUsername();
-    if (username == null) {
-        return undefined;
-    }
-
-    return findAssigneeListItemByUsername(username);
-}
-
 function toggleAssigneesPopover(): void {
     const assigneesPopover = findAssigneesPopoverTrigger();
     assigneesPopover?.click();
-}
-
-function assignSelfViaPopover(): void {
-    const authenticatedUserListItem = findAuthenticatedAssigneeListItem();
-    if (authenticatedUserListItem?.ariaChecked === true.toString()) {
-        return;
-    }
-
-    authenticatedUserListItem?.click();
 }
 
 function assignUserViaPopover(username: string): void {
