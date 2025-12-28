@@ -5,9 +5,48 @@ import {
     ElementText,
     ElementType,
 } from "@/enums";
+import { sleep } from "@/utilities/core-utils";
 import { DomUtils } from "@/utilities/dom-utils";
+import { isEnabled } from "@/utilities/settings";
 
-class PullRequests {}
+class PullRequests {
+    static async autoAssignAuthor(): Promise<void> {
+        if (!(await isEnabled())) {
+            return;
+        }
+
+        const authenticatedUser = getAuthenticatedUsername();
+        const pullRequestAuthor = getPullRequestAuthorUsername();
+        if (
+            authenticatedUser == null ||
+            pullRequestAuthor == null ||
+            authenticatedUser !== pullRequestAuthor
+        ) {
+            return;
+        }
+
+        const isAssigned = isAuthenticatedUserAssigned();
+        if (isAssigned) {
+            return;
+        }
+
+        const assignYourselfButton = findAssignYourselfButton();
+        if (assignYourselfButton != null) {
+            assignYourselfButton.click();
+            return;
+        }
+
+        toggleAssigneesPopover();
+        await sleep(250);
+        toggleAssigneesPopover();
+        await sleep(250);
+        toggleAssigneesPopover();
+        await sleep(1000);
+        assignSelfViaPopover();
+        await sleep(500);
+        toggleAssigneesPopover();
+    }
+}
 
 function findAssigneesPopoverTrigger(): HTMLElement | undefined {
     const selector =
