@@ -5,13 +5,16 @@ import {
     ElementText,
     ElementType,
 } from "@/enums";
+import type { User } from "@/enums/users";
+import { Users } from "@/enums/users";
 import { sleep } from "@/utilities/core-utils";
 import { DomUtils } from "@/utilities/dom-utils";
 import { SettingsUtils } from "@/utilities/settings-utils";
 
 class PullRequests {
     static async autoAssignAuthor(): Promise<void> {
-        if (!(await SettingsUtils.isEnabled())) {
+        const enabled = await this.isAutoAssignAuthorEnabled();
+        if (enabled === false) {
             return;
         }
 
@@ -45,6 +48,25 @@ class PullRequests {
         assignSelfViaPopover();
         await sleep(500);
         toggleAssigneesPopover();
+    }
+
+    static async isAutoAssignAuthorEnabled(): Promise<false | User> {
+        const globallyEnabled = await SettingsUtils.isEnabled();
+        if (!globallyEnabled) {
+            return false;
+        }
+
+        const settings = await SettingsUtils.getSettings();
+
+        if (settings.features.pullRequest.autoAssignAuthorEnabled) {
+            return Users.Everyone;
+        }
+
+        if (settings.features.pullRequest.autoAssignSelfEnabled) {
+            return Users.Self;
+        }
+
+        return false;
     }
 }
 

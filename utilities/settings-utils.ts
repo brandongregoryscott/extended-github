@@ -1,5 +1,5 @@
 import { RouteUtils } from "@/utilities/route-utils";
-import { compact, isEmpty } from "lodash-es";
+import { compact, get as lodashGet, isEmpty } from "lodash-es";
 
 type Settings = {
     /**
@@ -12,6 +12,9 @@ type Settings = {
      */
     includedOrganizations: string[];
 
+    /**
+     * Feature-specific settings
+     */
     features: FeatureSettings;
 };
 
@@ -43,6 +46,10 @@ const DEFAULT_SETTINGS: Settings = {
 };
 
 class SettingsUtils {
+    /**
+     * Returns whether the extension is globally enabled or not. Specific features may still be disabled
+     * and should be checked separately.
+     */
     static async isEnabled(): Promise<boolean> {
         const { enabled, includedOrganizations } = await this.getSettings();
         const { organization } = RouteUtils.parsePullRequestPath(
@@ -52,11 +59,11 @@ class SettingsUtils {
             return false;
         }
 
-        if (isEmpty(includedOrganizations)) {
-            return true;
-        }
+        const enabledByOrganization =
+            isEmpty(includedOrganizations) ||
+            includedOrganizations.includes(organization);
 
-        return includedOrganizations.includes(organization);
+        return enabledByOrganization;
     }
 
     static getDefaultSettings(): Settings {
