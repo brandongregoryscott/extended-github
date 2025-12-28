@@ -1,28 +1,21 @@
-import type { Settings } from "@/utilities/settings";
-import {
-    DEFAULT_SETTINGS,
-    getSettings,
-    updateSettings,
-} from "@/utilities/settings";
+import type { DeepPartial } from "@/types";
+import type { Settings } from "@/utilities/settings-utils";
+import { SettingsUtils } from "@/utilities/settings-utils";
+import { merge } from "lodash-es";
 import { useEffect, useState } from "react";
 
 const useSettings = () => {
-    const [settings, _setSettings] = useState<Settings>(DEFAULT_SETTINGS);
+    const [settings, _setSettings] = useState<Settings>(
+        SettingsUtils.getDefaultSettings()
+    );
     useEffect(() => {
-        getSettings().then(_setSettings);
+        SettingsUtils.getSettings().then(_setSettings);
     }, []);
 
-    const setSettings = async (
-        updatedSettings: ((settings: Settings) => Settings) | Partial<Settings>
-    ) => {
-        const mergedSettings: Settings = {
-            ...settings,
-            ...(typeof updatedSettings === "function"
-                ? updatedSettings(settings)
-                : updatedSettings),
-        };
+    const setSettings = async (update: DeepPartial<Settings>) => {
+        const mergedSettings = merge({}, settings, update);
         _setSettings(mergedSettings);
-        await updateSettings(mergedSettings);
+        await SettingsUtils.updateSettings(mergedSettings);
     };
 
     return { settings, setSettings };

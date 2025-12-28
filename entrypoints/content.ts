@@ -1,65 +1,19 @@
-import { sleep } from "@/utilities/core-utils";
-import {
-    assignSelfViaPopover,
-    findAssignYourselfButton,
-    getAuthenticatedUserName,
-    getPullRequestAuthorUserName,
-    isAuthenticatedUserAssigned,
-    toggleAssigneesPopover,
-} from "@/utilities/dom-utils";
-import { isEnabled } from "@/utilities/settings";
+import { PullRequests } from "@/features/pull-requests";
 
 const PULL_REQUEST_URL_PATTERN = "*://github.com/*/*/pull/*";
-const watchPattern = new MatchPattern(PULL_REQUEST_URL_PATTERN);
-
-async function maybeAssignSelfToPullRequest() {
-    if (!(await isEnabled())) {
-        return;
-    }
-
-    const authenticatedUser = getAuthenticatedUserName();
-    const pullRequestAuthor = getPullRequestAuthorUserName();
-    if (
-        authenticatedUser == null ||
-        pullRequestAuthor == null ||
-        authenticatedUser !== pullRequestAuthor
-    ) {
-        return;
-    }
-
-    const isAssigned = isAuthenticatedUserAssigned();
-    if (isAssigned) {
-        return;
-    }
-
-    const assignYourselfButton = findAssignYourselfButton();
-    if (assignYourselfButton != null) {
-        assignYourselfButton.click();
-        return;
-    }
-
-    toggleAssigneesPopover();
-    await sleep(250);
-    toggleAssigneesPopover();
-    await sleep(250);
-    toggleAssigneesPopover();
-    await sleep(1000);
-    assignSelfViaPopover();
-    await sleep(500);
-    toggleAssigneesPopover();
-}
+const PULL_REQUEST_MATCH_PATTERN = new MatchPattern(PULL_REQUEST_URL_PATTERN);
 
 const contentScript = defineContentScript({
     matches: [PULL_REQUEST_URL_PATTERN],
     async main(ctx) {
-        await maybeAssignSelfToPullRequest();
+        await PullRequests.autoAssignAuthor();
 
         ctx.addEventListener(
             window,
             "wxt:locationchange",
             async ({ newUrl }) => {
-                if (watchPattern.includes(newUrl)) {
-                    await maybeAssignSelfToPullRequest();
+                if (PULL_REQUEST_MATCH_PATTERN.includes(newUrl)) {
+                    await PullRequests.autoAssignAuthor();
                 }
             }
         );
