@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, FormField } from "@/entrypoints/popup/components";
+import { Accordion, Checkbox, FormField } from "@/entrypoints/popup/components";
 import { useSettings } from "@/entrypoints/popup/hooks";
 import { joinCsv, splitCsv } from "@/utilities/core-utils";
 import { cn } from "@/utilities/class-names";
@@ -7,16 +7,15 @@ import { cn } from "@/utilities/class-names";
 const InputId = {
     Enabled: "input-enabled",
     IncludedOrganizations: "input-included-organizations",
+    AutoAssignSelfToPullRequest: "input-auto-assign-self-to-pull-request",
+    AutoAssignAuthorToPullRequest: "input-auto-assign-author-to-pull-request",
 } as const;
 
 function SettingsForm() {
     const { settings, setSettings } = useSettings();
-    const { enabled } = settings;
+    const { enabled, features } = settings;
     const includedOrganizations = joinCsv(settings.includedOrganizations);
-    const handleToggleEnabled = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const enabled = event.target.checked;
+    const handleEnabledChange = (enabled: boolean) => {
         setSettings({ enabled });
     };
 
@@ -25,6 +24,18 @@ function SettingsForm() {
     ) => {
         const value = event.target.value;
         setSettings({ includedOrganizations: splitCsv(value) });
+    };
+
+    const handleAutoAssignSelfChange = (autoAssignSelfEnabled: boolean) => {
+        setSettings({
+            features: { pullRequest: { autoAssignSelfEnabled } },
+        });
+    };
+
+    const handleAutoAssignAuthorChange = (autoAssignAuthorEnabled: boolean) => {
+        setSettings({
+            features: { pullRequest: { autoAssignAuthorEnabled } },
+        });
     };
 
     const disabled = !enabled;
@@ -38,15 +49,12 @@ function SettingsForm() {
                         inputId={InputId.Enabled}
                         label="Extension enabled"
                         description="Globally enables or disables the extension.">
-                        <label className={cn("display-flex", "gap-sm")}>
-                            <input
-                                id={InputId.Enabled}
-                                type="checkbox"
-                                onChange={handleToggleEnabled}
-                                checked={enabled}
-                            />
-                            {enabled ? "Enabled" : "Disabled"}
-                        </label>
+                        <Checkbox
+                            label="Enabled"
+                            id={InputId.Enabled}
+                            onChange={handleEnabledChange}
+                            value={enabled}
+                        />
                     </FormField>
                     <FormField
                         inputId={InputId.IncludedOrganizations}
@@ -58,6 +66,30 @@ function SettingsForm() {
                             disabled={disabled}
                             onChange={handleIncludedOrganizationsChange}
                             value={includedOrganizations}
+                        />
+                    </FormField>
+                </div>
+            </Accordion>
+            <Accordion label="Pull requests">
+                <div className={cn("display-flex-column", "gap-md")}>
+                    <FormField
+                        inputId={InputId.AutoAssignSelfToPullRequest}
+                        label="Auto-assign self to pull requests">
+                        <Checkbox
+                            label="Enabled"
+                            id={InputId.AutoAssignSelfToPullRequest}
+                            onChange={handleAutoAssignSelfChange}
+                            value={features.pullRequest.autoAssignSelfEnabled}
+                        />
+                    </FormField>
+                    <FormField
+                        inputId={InputId.AutoAssignAuthorToPullRequest}
+                        label="Auto-assign author to pull requests">
+                        <Checkbox
+                            label="Enabled"
+                            id={InputId.AutoAssignAuthorToPullRequest}
+                            onChange={handleAutoAssignAuthorChange}
+                            value={features.pullRequest.autoAssignAuthorEnabled}
                         />
                     </FormField>
                 </div>

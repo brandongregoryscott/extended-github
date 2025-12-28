@@ -1,5 +1,6 @@
+import type { DeepPartial } from "@/types";
 import { RouteUtils } from "@/utilities/route-utils";
-import { compact, get as lodashGet, isEmpty } from "lodash-es";
+import { compact, get as lodashGet, isEmpty, merge } from "lodash-es";
 
 type Settings = {
     /**
@@ -40,7 +41,7 @@ const DEFAULT_SETTINGS: Settings = {
     features: {
         pullRequest: {
             autoAssignSelfEnabled: true,
-            autoAssignAuthorEnabled: false,
+            autoAssignAuthorEnabled: true,
         },
     },
 };
@@ -79,8 +80,10 @@ class SettingsUtils {
         };
     }
 
-    static async updateSettings(settings: Partial<Settings>): Promise<void> {
-        return browser.storage.sync.set<Settings>(settings);
+    static async updateSettings(update: DeepPartial<Settings>): Promise<void> {
+        const settings = await this.getSettings();
+        const mergedSettings = merge({}, settings, update);
+        return browser.storage.sync.set<Settings>(mergedSettings);
     }
 }
 

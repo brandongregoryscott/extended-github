@@ -1,5 +1,7 @@
+import type { DeepPartial } from "@/types";
 import type { Settings } from "@/utilities/settings-utils";
 import { SettingsUtils } from "@/utilities/settings-utils";
+import { merge } from "lodash-es";
 import { useEffect, useState } from "react";
 
 const useSettings = () => {
@@ -10,15 +12,9 @@ const useSettings = () => {
         SettingsUtils.getSettings().then(_setSettings);
     }, []);
 
-    const setSettings = async (
-        updatedSettings: ((settings: Settings) => Settings) | Partial<Settings>
-    ) => {
-        const mergedSettings: Settings = {
-            ...settings,
-            ...(typeof updatedSettings === "function"
-                ? updatedSettings(settings)
-                : updatedSettings),
-        };
+    const setSettings = async (update: DeepPartial<Settings>) => {
+        const mergedSettings = merge({}, settings, update);
+        console.log("mergedSettings", mergedSettings);
         _setSettings(mergedSettings);
         await SettingsUtils.updateSettings(mergedSettings);
     };
