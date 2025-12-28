@@ -23,7 +23,7 @@ const ClassName = {
     Author: "author",
     Assignee: "assignee",
     AssigneeListItemUsername: "js-username",
-};
+} as const;
 
 function findElementByInnerText<T extends HTMLElement = HTMLElement>(
     type: keyof HTMLElementTagNameMap,
@@ -34,17 +34,15 @@ function findElementByInnerText<T extends HTMLElement = HTMLElement>(
 }
 
 function findAssigneesPopoverTrigger(): HTMLElement | undefined {
-    return (
-        document.querySelector<HTMLElement>(
-            `[${AttributeName.DataMenuTrigger}="${AttributeValue.AssigneesSelectMenu}"]`
-        ) ?? undefined
-    );
+    const selector =
+        `[${AttributeName.DataMenuTrigger}="${AttributeValue.AssigneesSelectMenu}"]` as const;
+    return document.querySelector<HTMLElement>(selector) ?? undefined;
 }
 
 function getAuthenticatedUserName(): string | undefined {
-    const authenticatedUserMeta = document.querySelector(
-        `${ElementType.Meta}[${AttributeName.Name}="${AttributeValue.UserLogin}"]`
-    );
+    const selector =
+        `${ElementType.Meta}[${AttributeName.Name}="${AttributeValue.UserLogin}"]` as const;
+    const authenticatedUserMeta = document.querySelector(selector);
 
     if (authenticatedUserMeta == null) {
         return undefined;
@@ -66,10 +64,9 @@ function getPullRequestAuthorUserName(): string | undefined {
 
 function isAuthenticatedUserAssigned(): boolean {
     const authenticatedUserName = getAuthenticatedUserName();
+    const selector = `${ElementType.Anchor}.${ClassName.Assignee}` as const;
     const assignees = Array.from(
-        document.querySelectorAll<HTMLElement>(
-            `${ElementType.Anchor}.${ClassName.Assignee}`
-        )
+        document.querySelectorAll<HTMLElement>(selector)
     );
 
     return (
@@ -92,10 +89,9 @@ function findAuthenticatedAssigneeListItem(): HTMLElement | undefined {
         return undefined;
     }
 
+    const selector = `.${ClassName.AssigneeListItemUsername}` as const;
     const listItems = Array.from(
-        document.querySelectorAll<HTMLElement>(
-            `.${ClassName.AssigneeListItemUsername}`
-        )
+        document.querySelectorAll<HTMLElement>(selector)
     );
     return (
         listItems
