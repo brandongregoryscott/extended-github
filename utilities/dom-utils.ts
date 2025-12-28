@@ -13,14 +13,18 @@ class DomUtils {
         }
 
         if ("type" in options) {
-            const elements = Array.from(
-                document.querySelectorAll<T>(options.type)
-            );
+            const elements = this.querySelectorAll<T>(options.type);
             return this.findByInnerText(elements, innerText);
         }
 
         const elements = Array.from(document.getElementsByTagName("*")) as T[];
         return this.findByInnerText(elements, innerText);
+    }
+
+    static querySelectorAll<T extends HTMLElement = HTMLElement>(
+        selectors: string
+    ): T[] {
+        return Array.from(document.querySelectorAll<T>(selectors));
     }
 
     private static findByInnerText<T extends HTMLElement = HTMLElement>(
