@@ -39,7 +39,7 @@ function findAssigneesPopoverTrigger(): HTMLElement | undefined {
     return document.querySelector<HTMLElement>(selector) ?? undefined;
 }
 
-function getAuthenticatedUserName(): string | undefined {
+function getAuthenticatedUsername(): string | undefined {
     const selector =
         `${ElementType.Meta}[${AttributeName.Name}="${AttributeValue.UserLogin}"]` as const;
     const authenticatedUserMeta = document.querySelector(selector);
@@ -51,7 +51,7 @@ function getAuthenticatedUserName(): string | undefined {
     return (authenticatedUserMeta as any).content;
 }
 
-function getPullRequestAuthorUserName(): string | undefined {
+function getPullRequestAuthorUsername(): string | undefined {
     const authorLink = document.querySelector<HTMLElement>(
         `${ElementType.Anchor}.${ClassName.Author}`
     );
@@ -62,18 +62,24 @@ function getPullRequestAuthorUserName(): string | undefined {
     return authorLink.innerText;
 }
 
-function isAuthenticatedUserAssigned(): boolean {
-    const authenticatedUserName = getAuthenticatedUserName();
+function isUserAssigned(username: string): boolean {
     const selector = `${ElementType.Anchor}.${ClassName.Assignee}` as const;
     const assignees = Array.from(
         document.querySelectorAll<HTMLElement>(selector)
     );
 
     return (
-        assignees.find(
-            (assignee) => assignee.innerText === authenticatedUserName
-        ) != null
+        assignees.find((assignee) => assignee.innerText === username) != null
     );
+}
+
+function isAuthenticatedUserAssigned(): boolean {
+    const authenticatedUserName = getAuthenticatedUsername();
+    if (authenticatedUserName == null) {
+        return false;
+    }
+
+    return isUserAssigned(authenticatedUserName);
 }
 
 function findAssignYourselfButton(): HTMLButtonElement | undefined {
@@ -83,12 +89,9 @@ function findAssignYourselfButton(): HTMLButtonElement | undefined {
     );
 }
 
-function findAuthenticatedAssigneeListItem(): HTMLElement | undefined {
-    const username = getAuthenticatedUserName();
-    if (username == null) {
-        return undefined;
-    }
-
+function findAssigneeListItemByUsername(
+    username: string
+): HTMLElement | undefined {
     const selector = `.${ClassName.AssigneeListItemUsername}` as const;
     const listItems = Array.from(
         document.querySelectorAll<HTMLElement>(selector)
@@ -98,6 +101,15 @@ function findAuthenticatedAssigneeListItem(): HTMLElement | undefined {
             .find((element) => element.innerText === username)
             ?.closest<HTMLElement>(ElementType.Label) ?? undefined
     );
+}
+
+function findAuthenticatedAssigneeListItem(): HTMLElement | undefined {
+    const username = getAuthenticatedUsername();
+    if (username == null) {
+        return undefined;
+    }
+
+    return findAssigneeListItemByUsername(username);
 }
 
 function toggleAssigneesPopover(): void {
@@ -114,12 +126,20 @@ function assignSelfViaPopover(): void {
     authenticatedUserListItem?.click();
 }
 
+function assignUserViaPopover(username: string): void {
+    const userListItem = findAssigneeListItemByUsername(username);
+    if (userListItem?.ariaChecked === true.toString()) {
+        return;
+    }
+}
+
 export {
     assignSelfViaPopover,
+    assignUserViaPopover,
     findAssignYourselfButton,
     findElementByInnerText,
-    getAuthenticatedUserName,
-    getPullRequestAuthorUserName,
+    getAuthenticatedUsername,
+    getPullRequestAuthorUsername,
     isAuthenticatedUserAssigned,
     toggleAssigneesPopover,
 };

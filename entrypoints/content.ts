@@ -2,8 +2,8 @@ import { sleep } from "@/utilities/core-utils";
 import {
     assignSelfViaPopover,
     findAssignYourselfButton,
-    getAuthenticatedUserName,
-    getPullRequestAuthorUserName,
+    getAuthenticatedUsername,
+    getPullRequestAuthorUsername,
     isAuthenticatedUserAssigned,
     toggleAssigneesPopover,
 } from "@/utilities/dom-utils";
@@ -17,8 +17,8 @@ async function maybeAssignSelfToPullRequest() {
         return;
     }
 
-    const authenticatedUser = getAuthenticatedUserName();
-    const pullRequestAuthor = getPullRequestAuthorUserName();
+    const authenticatedUser = getAuthenticatedUsername();
+    const pullRequestAuthor = getPullRequestAuthorUsername();
     if (
         authenticatedUser == null ||
         pullRequestAuthor == null ||
