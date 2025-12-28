@@ -65,6 +65,8 @@ async function autoAssignUser(username: string): Promise<void> {
         return;
     }
 
+    // We need to toggle open & close the popover for the users to actually load. If we just open it
+    // programmatically, it seems to load indefinitely.
     toggleAssigneesPopover();
     await sleep(250);
     toggleAssigneesPopover();
@@ -145,6 +147,8 @@ function assignUserViaPopover(username: string): void {
     if (userListItem?.ariaChecked === true.toString()) {
         return;
     }
+
+    userListItem?.click();
 }
 
 export { PullRequests };
