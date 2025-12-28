@@ -11,11 +11,35 @@ type Settings = {
      * List of organizations to enable the extension on. If empty, the extension will work on any organization.
      */
     includedOrganizations: string[];
+
+    features: FeatureSettings;
+};
+
+type FeatureSettings = {
+    pullRequest: PullRequestFeatureSettings;
+};
+
+type PullRequestFeatureSettings = {
+    /**
+     * Whether to automatically assign your own user to a pull request you authored
+     */
+    autoAssignSelfEnabled: boolean;
+
+    /**
+     * Whether to automatically assign the pull request author, including other users
+     */
+    autoAssignAuthorEnabled: boolean;
 };
 
 const DEFAULT_SETTINGS: Settings = {
     enabled: true,
     includedOrganizations: [],
+    features: {
+        pullRequest: {
+            autoAssignSelfEnabled: true,
+            autoAssignAuthorEnabled: false,
+        },
+    },
 };
 
 class SettingsUtils {
@@ -53,5 +77,5 @@ class SettingsUtils {
     }
 }
 
-export type { Settings };
+export type { FeatureSettings, PullRequestFeatureSettings, Settings };
 export { SettingsUtils };
