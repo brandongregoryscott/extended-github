@@ -114,7 +114,10 @@ function isUserAssigned(username: string): boolean {
     const assignees = DOMUtils.querySelectorAll<HTMLElement>(selector);
 
     return (
-        assignees.find((assignee) => assignee.innerText === username) != null
+        DOMUtils.findElementByInnerText({
+            elements: assignees,
+            innerText: username,
+        }) != null
     );
 }
 
@@ -130,10 +133,12 @@ function findAssigneeListItemByUsername(
 ): HTMLElement | undefined {
     const selector = `.${ClassName.AssigneeListItemUsername}` as const;
     const listItems = DOMUtils.querySelectorAll(selector);
+
     return (
-        listItems
-            .find((element) => element.innerText === username)
-            ?.closest<HTMLElement>(ElementType.Label) ?? undefined
+        DOMUtils.findElementByInnerText({
+            elements: listItems,
+            innerText: username,
+        })?.closest<HTMLElement>(ElementType.Label) ?? undefined
     );
 }
 
