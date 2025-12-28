@@ -1,4 +1,4 @@
-import { parsePullRequestPath } from "@/utilities/route-utils";
+import { RouteUtils } from "@/utilities/route-utils";
 import { compact, isEmpty } from "lodash-es";
 
 type Settings = {
@@ -21,7 +21,9 @@ const DEFAULT_SETTINGS: Settings = {
 class SettingsUtils {
     static async isEnabled(): Promise<boolean> {
         const { enabled, includedOrganizations } = await this.getSettings();
-        const { organization } = parsePullRequestPath(window.location.pathname);
+        const { organization } = RouteUtils.parsePullRequestPath(
+            window.location.pathname
+        );
         if (!enabled) {
             return false;
         }
