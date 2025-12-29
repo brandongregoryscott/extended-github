@@ -43,27 +43,27 @@ function SettingsForm() {
     return (
         <div className={cn("display-flex-column", "gap-md", "padding-lg")}>
             <h2 className={cn("text-align-center")}>Extended GitHub</h2>
-            <Accordion label="Global settings" defaultIsOpen={true}>
+            <Accordion defaultIsOpen={true} label="Global settings">
                 <div className={cn("display-flex-column", "gap-md")}>
                     <FormField
+                        description="Globally enables or disables the extension."
                         inputId={InputId.Enabled}
-                        label="Extension enabled"
-                        description="Globally enables or disables the extension.">
+                        label="Extension enabled">
                         <Checkbox
-                            label="Enabled"
                             id={InputId.Enabled}
+                            label="Enabled"
                             onChange={handleEnabledChange}
                             value={enabled}
                         />
                     </FormField>
                     <FormField
-                        inputId={InputId.IncludedOrganizations}
+                        description="Comma-separated list of organizations to enable the extension on. If empty, the extension will work on any organization."
                         disabled={disabled}
-                        label="Included organizations"
-                        description="Comma-separated list of organizations to enable the extension on. If empty, the extension will work on any organization.">
+                        inputId={InputId.IncludedOrganizations}
+                        label="Included organizations">
                         <textarea
-                            id={InputId.IncludedOrganizations}
                             disabled={disabled}
+                            id={InputId.IncludedOrganizations}
                             onChange={handleIncludedOrganizationsChange}
                             value={includedOrganizations}
                         />
@@ -78,8 +78,8 @@ function SettingsForm() {
                         label="Auto-assign self to pull requests">
                         <Checkbox
                             disabled={disabled}
-                            label="Enabled"
                             id={InputId.AutoAssignSelfToPullRequest}
+                            label="Enabled"
                             onChange={handleAutoAssignSelfChange}
                             value={features.pullRequest.autoAssignSelfEnabled}
                         />
@@ -90,8 +90,8 @@ function SettingsForm() {
                         label="Auto-assign author to pull requests">
                         <Checkbox
                             disabled={disabled}
-                            label="Enabled"
                             id={InputId.AutoAssignAuthorToPullRequest}
+                            label="Enabled"
                             onChange={handleAutoAssignAuthorChange}
                             value={features.pullRequest.autoAssignAuthorEnabled}
                         />

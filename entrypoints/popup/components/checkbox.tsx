@@ -18,11 +18,11 @@ function Checkbox(props: CheckboxProps) {
     return (
         <label className={cn("display-flex", "gap-sm")}>
             <input
+                checked={value}
                 disabled={disabled}
                 id={id}
-                type="checkbox"
                 onChange={handleChange}
-                checked={value}
+                type="checkbox"
             />
             {label}
         </label>

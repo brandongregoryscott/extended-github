@@ -49,6 +49,7 @@ const config = defineConfig([
             "collation/group-exports": "error",
             "collation/no-default-export": "error",
             "collation/no-inline-export": "error",
+            "collation/sort-dependency-list": "error",
             "collation/sort-exports": "error",
         },
     },
@@ -96,11 +97,11 @@ const config = defineConfig([
             import: importPlugin,
         },
         rules: {
-            "import/no-duplicates": "error",
             "import/consistent-type-specifier-style": [
                 "error",
                 "prefer-top-level",
             ],
+            "import/no-duplicates": "error",
         },
     },
     {
@@ -117,6 +118,17 @@ const config = defineConfig([
             reactPlugin.configs.flat.recommended,
             reactHooksPlugin.configs.flat.recommended,
         ],
+        rules: {
+            "react-hooks/exhaustive-deps": "error",
+            "react-hooks/rules-of-hooks": "error",
+            "react/display-name": "error",
+            "react/hook-use-state": "error",
+            "react/jsx-boolean-value": ["error", "always"],
+            "react/jsx-handler-names": "error",
+            "react/jsx-no-constructed-context-values": "error",
+            "react/jsx-sort-props": "error",
+            "react/self-closing-comp": "error",
+        },
     },
 
     { ignores: [".wxt", "dist", "eslint.config.mjs"] },

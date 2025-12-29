@@ -5,6 +5,7 @@ import { merge } from "lodash-es";
 import { useEffect, useState } from "react";
 
 const useSettings = () => {
+    // eslint-disable-next-line react/hook-use-state -- The setter fn is intentionally wrapped so we can persist the settings to browser storage
     const [settings, _setSettings] = useState<Settings>(
         SettingsUtils.getDefaultSettings()
     );
