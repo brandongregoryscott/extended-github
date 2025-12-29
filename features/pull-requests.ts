@@ -123,8 +123,8 @@ function isUserAssigned(username: string): boolean {
 
 function findAssignYourselfButton(): HTMLButtonElement | undefined {
     return DOMUtils.findElementByInnerText({
-        type: ElementType.Button,
         innerText: ElementText.AssignYourself,
+        type: ElementType.Button,
     });
 }
 

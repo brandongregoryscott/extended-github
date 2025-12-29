@@ -2,15 +2,15 @@ import React from "react";
 import { cn } from "@/utilities/class-names";
 
 type FormFieldProps = {
+    children: React.ReactNode;
+    description?: string;
     disabled?: boolean;
     inputId: string;
     label: string;
-    description?: string;
-    children: React.ReactNode;
 };
 
 function FormField(props: FormFieldProps) {
-    const { inputId, disabled, label, description, children } = props;
+    const { children, description, disabled, inputId, label } = props;
 
     return (
         <label

@@ -1,7 +1,7 @@
 type PullRequestPath = {
     organization: string;
-    repo: string;
     pullRequestNumber: number;
+    repo: string;
 };
 
 class RouteUtils {
@@ -10,8 +10,8 @@ class RouteUtils {
             pathname.split("/");
         return {
             organization,
-            repo,
             pullRequestNumber: parseInt(pullRequestNumberAsString),
+            repo,
         };
     }
 }

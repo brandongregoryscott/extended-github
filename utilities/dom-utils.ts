@@ -1,7 +1,7 @@
 type FindElementByInnerTextOptions<T extends HTMLElement = HTMLElement> =
     | { elements: T[]; innerText: string }
-    | { innerText: string }
-    | { type: keyof HTMLElementTagNameMap; innerText: string };
+    | { innerText: string; type: keyof HTMLElementTagNameMap }
+    | { innerText: string };
 
 class DOMUtils {
     static findElementByInnerText<T extends HTMLElement = HTMLElement>(

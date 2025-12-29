@@ -4,7 +4,6 @@ const PULL_REQUEST_URL_PATTERN = "*://github.com/*/*/pull/*";
 const PULL_REQUEST_MATCH_PATTERN = new MatchPattern(PULL_REQUEST_URL_PATTERN);
 
 const contentScript = defineContentScript({
-    matches: [PULL_REQUEST_URL_PATTERN],
     async main(ctx) {
         await PullRequests.autoAssignAuthor();
 
@@ -18,6 +17,7 @@ const contentScript = defineContentScript({
             }
         );
     },
+    matches: [PULL_REQUEST_URL_PATTERN],
 });
 
 // eslint-disable-next-line collation/no-default-export -- This module needs to be default exported

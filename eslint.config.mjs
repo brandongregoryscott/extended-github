@@ -88,7 +88,12 @@ const config = defineConfig([
             perfectionist: perfectionistPlugin,
         },
         rules: {
+            "perfectionist/sort-exports": "error",
+            "perfectionist/sort-imports": ["error", { newlinesBetween: 0 }],
+            "perfectionist/sort-interfaces": "error",
             "perfectionist/sort-intersection-types": "error",
+            "perfectionist/sort-object-types": "error",
+            "perfectionist/sort-objects": "error",
             "perfectionist/sort-union-types": "error",
         },
     },
