@@ -1,6 +1,6 @@
+import { compact, get as lodashGet, isEmpty, merge } from "lodash-es";
 import type { DeepPartial } from "@/types";
 import { RouteUtils } from "@/utilities/route-utils";
-import { compact, get as lodashGet, isEmpty, merge } from "lodash-es";
 
 type Settings = {
     /**
@@ -9,14 +9,14 @@ type Settings = {
     enabled: boolean;
 
     /**
-     * List of organizations to enable the extension on. If empty, the extension will work on any organization.
-     */
-    includedOrganizations: string[];
-
-    /**
      * Feature-specific settings
      */
     features: FeatureSettings;
+
+    /**
+     * List of organizations to enable the extension on. If empty, the extension will work on any organization.
+     */
+    includedOrganizations: string[];
 };
 
 type FeatureSettings = {
@@ -25,25 +25,25 @@ type FeatureSettings = {
 
 type PullRequestFeatureSettings = {
     /**
-     * Whether to automatically assign your own user to a pull request you authored
-     */
-    autoAssignSelfEnabled: boolean;
-
-    /**
      * Whether to automatically assign the pull request author, including other users
      */
     autoAssignAuthorEnabled: boolean;
+
+    /**
+     * Whether to automatically assign your own user to a pull request you authored
+     */
+    autoAssignSelfEnabled: boolean;
 };
 
 const DEFAULT_SETTINGS: Settings = {
     enabled: true,
-    includedOrganizations: [],
     features: {
         pullRequest: {
-            autoAssignSelfEnabled: true,
             autoAssignAuthorEnabled: true,
+            autoAssignSelfEnabled: true,
         },
     },
+    includedOrganizations: [],
 };
 
 class SettingsUtils {

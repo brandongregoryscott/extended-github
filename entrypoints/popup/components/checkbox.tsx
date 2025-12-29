@@ -1,16 +1,16 @@
-import { cn } from "@/utilities/class-names";
 import React from "react";
+import { cn } from "@/utilities/class-names";
 
 type CheckboxProps = {
-    id: string;
     disabled?: boolean;
+    id: string;
+    label: string;
     onChange: (value: boolean) => void;
     value: boolean;
-    label: string;
 };
 
 function Checkbox(props: CheckboxProps) {
-    const { label, id, disabled, onChange, value } = props;
+    const { disabled, id, label, onChange, value } = props;
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         onChange(event.target.checked);
     };

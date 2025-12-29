@@ -1,18 +1,18 @@
 import React from "react";
 import { Accordion, Checkbox, FormField } from "@/entrypoints/popup/components";
 import { useSettings } from "@/entrypoints/popup/hooks";
-import { joinCsv, splitCsv } from "@/utilities/core-utils";
 import { cn } from "@/utilities/class-names";
+import { joinCsv, splitCsv } from "@/utilities/core-utils";
 
 const InputId = {
+    AutoAssignAuthorToPullRequest: "input-auto-assign-author-to-pull-request",
+    AutoAssignSelfToPullRequest: "input-auto-assign-self-to-pull-request",
     Enabled: "input-enabled",
     IncludedOrganizations: "input-included-organizations",
-    AutoAssignSelfToPullRequest: "input-auto-assign-self-to-pull-request",
-    AutoAssignAuthorToPullRequest: "input-auto-assign-author-to-pull-request",
 } as const;
 
 function SettingsForm() {
-    const { settings, setSettings } = useSettings();
+    const { setSettings, settings } = useSettings();
     const { enabled, features } = settings;
     const includedOrganizations = joinCsv(settings.includedOrganizations);
     const handleEnabledChange = (enabled: boolean) => {

@@ -1,8 +1,8 @@
 const ElementType = {
     Anchor: "a",
     Button: "button",
-    Meta: "meta",
     Label: "label",
+    Meta: "meta",
 } as const;
 
 const ElementText = {

@@ -1,13 +1,13 @@
 import React from "react";
 
 type AccordionProps = {
+    children: React.ReactNode;
     defaultIsOpen?: boolean;
     label: string;
-    children: React.ReactNode;
 };
 
 function Accordion(props: AccordionProps) {
-    const { label, children, defaultIsOpen } = props;
+    const { children, defaultIsOpen, label } = props;
     return (
         <details open={defaultIsOpen}>
             <summary>{label}</summary>
