@@ -1,12 +1,19 @@
 import React from "react";
-import { Accordion, Checkbox, FormField } from "@/entrypoints/popup/components";
+import type { UserGroup } from "@/enums";
+import {
+    Accordion,
+    Checkbox,
+    FormField,
+    PullRequestUserGroupSelect,
+} from "@/entrypoints/popup/components";
 import { useSettings } from "@/entrypoints/popup/hooks";
 import { cn } from "@/utilities/class-names";
 import { joinCsv, splitCsv } from "@/utilities/core-utils";
 
 const InputId = {
+    AutoAddTicketToPullRequestTitle:
+        "input-auto-add-ticket-to-pull-request-title",
     AutoAssignAuthorToPullRequest: "input-auto-assign-author-to-pull-request",
-    AutoAssignSelfToPullRequest: "input-auto-assign-self-to-pull-request",
     Enabled: "input-enabled",
     IncludedOrganizations: "input-included-organizations",
 } as const;
@@ -26,22 +33,22 @@ function SettingsForm() {
         setSettings({ includedOrganizations: splitCsv(value) });
     };
 
-    const handleAutoAssignSelfChange = (autoAssignSelfEnabled: boolean) => {
-        setSettings({
-            features: { pullRequest: { autoAssignSelfEnabled } },
-        });
+    const handleAutoAssignAuthorChange = (
+        autoAssignAuthor: false | UserGroup
+    ) => {
+        setSettings({ features: { pullRequest: { autoAssignAuthor } } });
     };
 
-    const handleAutoAssignAuthorChange = (autoAssignAuthorEnabled: boolean) => {
-        setSettings({
-            features: { pullRequest: { autoAssignAuthorEnabled } },
-        });
+    const handleAutoAddTicketToTitleChange = (
+        autoAddTicketToTitle: false | UserGroup
+    ) => {
+        setSettings({ features: { pullRequest: { autoAddTicketToTitle } } });
     };
 
     const disabled = !enabled;
 
     return (
-        <div className={cn("display-flex-column", "gap-md", "padding-lg")}>
+        <div className={cn("display-flex-column", "gap-lg", "padding-lg")}>
             <h2 className={cn("text-align-center")}>Extended GitHub</h2>
             <Accordion defaultIsOpen={true} label="Global settings">
                 <div className={cn("display-flex-column", "gap-md")}>
@@ -74,26 +81,22 @@ function SettingsForm() {
                 <div className={cn("display-flex-column", "gap-md")}>
                     <FormField
                         disabled={disabled}
-                        inputId={InputId.AutoAssignSelfToPullRequest}
-                        label="Auto-assign self to pull requests">
-                        <Checkbox
-                            disabled={disabled}
-                            id={InputId.AutoAssignSelfToPullRequest}
-                            label="Enabled"
-                            onChange={handleAutoAssignSelfChange}
-                            value={features.pullRequest.autoAssignSelfEnabled}
+                        inputId={InputId.AutoAssignAuthorToPullRequest}
+                        label="Automatically assign author to pull requests">
+                        <PullRequestUserGroupSelect
+                            id={InputId.AutoAssignAuthorToPullRequest}
+                            onChange={handleAutoAssignAuthorChange}
+                            value={features.pullRequest.autoAssignAuthor}
                         />
                     </FormField>
                     <FormField
                         disabled={disabled}
-                        inputId={InputId.AutoAssignAuthorToPullRequest}
-                        label="Auto-assign author to pull requests">
-                        <Checkbox
-                            disabled={disabled}
-                            id={InputId.AutoAssignAuthorToPullRequest}
-                            label="Enabled"
-                            onChange={handleAutoAssignAuthorChange}
-                            value={features.pullRequest.autoAssignAuthorEnabled}
+                        inputId={InputId.AutoAddTicketToPullRequestTitle}
+                        label="Automatically add ticket number to title">
+                        <PullRequestUserGroupSelect
+                            id={InputId.AutoAddTicketToPullRequestTitle}
+                            onChange={handleAutoAddTicketToTitleChange}
+                            value={features.pullRequest.autoAddTicketToTitle}
                         />
                     </FormField>
                 </div>

@@ -1,3 +1,5 @@
+import type { Brand } from "@/types";
+
 function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -11,4 +13,11 @@ function joinCsv(values: string[]): string {
     return values.map((value) => value.trim()).join(",");
 }
 
-export { joinCsv, sleep, splitCsv };
+/**
+ * Brands a string literal so it can only be referenced by its intended origin (a constant enum object)
+ */
+function brand<T extends string>(value: T): Brand<T> {
+    return value;
+}
+
+export { brand, joinCsv, sleep, splitCsv };

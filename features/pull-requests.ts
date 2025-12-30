@@ -1,65 +1,95 @@
-import type { UserGroup } from "@/enums";
-import {
-    AttributeName,
-    AttributeValue,
-    ClassName,
-    ElementText,
-    ElementType,
-    UserGroups,
-} from "@/enums";
+import { UserGroups } from "@/enums";
 import { sleep } from "@/utilities/core-utils";
-import { DOMUtils } from "@/utilities/dom-utils";
+import { GithubDOMUtils } from "@/utilities/github-dom-utils";
 import { GithubUtils } from "@/utilities/github-utils";
 import { SettingsUtils } from "@/utilities/settings-utils";
+import { StringUtils } from "@/utilities/string-utils";
 
 class PullRequests {
+    static async runScripts(): Promise<void> {
+        await this.autoAssignAuthor();
+        await this.autoAddTicketToTitle();
+    }
+
     static async autoAssignAuthor(): Promise<void> {
-        const enabled = await this.isAutoAssignAuthorEnabled();
+        const enabled = await SettingsUtils.isAutoAssignAuthorEnabled();
         if (enabled === false) {
             return;
         }
 
         const authenticatedUser = GithubUtils.getAuthenticatedUsername();
-        const pullRequestAuthor = getPullRequestAuthorUsername();
+        const pullRequestAuthor = GithubUtils.getPullRequestAuthorUsername();
         if (authenticatedUser == null || pullRequestAuthor == null) {
             return;
         }
 
-        if (enabled === UserGroups.Everyone) {
+        if (enabled === UserGroups.Author) {
             return autoAssignUser(pullRequestAuthor);
         }
 
         return autoAssignSelf();
     }
 
-    static async isAutoAssignAuthorEnabled(): Promise<false | UserGroup> {
-        const globallyEnabled = await SettingsUtils.isEnabled();
-        if (!globallyEnabled) {
-            return false;
+    static async autoAddTicketToTitle(): Promise<void> {
+        const enabled = await SettingsUtils.isAutoAddTicketToTitleEnabled();
+        if (enabled === false) {
+            return;
         }
 
-        const settings = await SettingsUtils.getSettings();
-
-        if (settings.features.pullRequest.autoAssignAuthorEnabled) {
-            return UserGroups.Everyone;
+        const authenticatedUser = GithubUtils.getAuthenticatedUsername();
+        const pullRequestAuthor = GithubUtils.getPullRequestAuthorUsername();
+        if (authenticatedUser == null || pullRequestAuthor == null) {
+            return;
         }
 
-        if (settings.features.pullRequest.autoAssignSelfEnabled) {
-            return UserGroups.Self;
+        if (
+            enabled === UserGroups.Self &&
+            pullRequestAuthor !== authenticatedUser
+        ) {
+            return;
         }
 
-        return false;
+        const branchName = GithubUtils.getPullRequestBranchName();
+        if (branchName == null) {
+            return;
+        }
+
+        const ticketNumber = StringUtils.parseTicketNumber(branchName);
+        if (ticketNumber == null) {
+            return;
+        }
+
+        const pullRequestTitle = GithubUtils.getPullRequestTitle();
+        if (
+            pullRequestTitle == null ||
+            pullRequestTitle.endsWith(ticketNumber)
+        ) {
+            return;
+        }
+
+        const editTitleButton = GithubDOMUtils.findEditPullRequestTitleButton();
+        editTitleButton?.click();
+        await sleep(250);
+        const titleInput = GithubDOMUtils.findPullRequestTitleInput();
+        if (titleInput == null) {
+            return;
+        }
+
+        const updatedTitle = `${pullRequestTitle} ${ticketNumber}`;
+        titleInput.value = updatedTitle;
+        const saveButton = GithubDOMUtils.findSaveButton();
+        saveButton?.click();
     }
 }
 
 async function autoAssignUser(username: string): Promise<void> {
     const authenticatedUser = GithubUtils.getAuthenticatedUsername();
-    const isAssigned = isUserAssigned(username);
+    const isAssigned = GithubUtils.isUserAssigned(username);
     if (isAssigned) {
         return;
     }
 
-    const assignYourselfButton = findAssignYourselfButton();
+    const assignYourselfButton = GithubDOMUtils.findAssignYourselfButton();
     if (username === authenticatedUser && assignYourselfButton != null) {
         assignYourselfButton.click();
         return;
@@ -80,7 +110,7 @@ async function autoAssignUser(username: string): Promise<void> {
 
 async function autoAssignSelf(): Promise<void> {
     const authenticatedUsername = GithubUtils.getAuthenticatedUsername();
-    const pullRequestAuthor = getPullRequestAuthorUsername();
+    const pullRequestAuthor = GithubUtils.getPullRequestAuthorUsername();
 
     if (
         authenticatedUsername == null ||
@@ -93,62 +123,14 @@ async function autoAssignSelf(): Promise<void> {
     return autoAssignUser(authenticatedUsername);
 }
 
-function findAssigneesPopoverTrigger(): HTMLElement | undefined {
-    const selector =
-        `[${AttributeName.DataMenuTrigger}="${AttributeValue.AssigneesSelectMenu}"]` as const;
-    return DOMUtils.querySelector<HTMLElement>(selector);
-}
-
-function getPullRequestAuthorUsername(): string | undefined {
-    const selector = `${ElementType.Anchor}.${ClassName.Author}` as const;
-    const authorLink = DOMUtils.querySelector<HTMLElement>(selector);
-    if (authorLink == null) {
-        return undefined;
-    }
-
-    return authorLink.innerText;
-}
-
-function isUserAssigned(username: string): boolean {
-    const selector = `${ElementType.Anchor}.${ClassName.Assignee}` as const;
-    const assignees = DOMUtils.querySelectorAll<HTMLElement>(selector);
-
-    return (
-        DOMUtils.findElementByInnerText({
-            elements: assignees,
-            innerText: username,
-        }) != null
-    );
-}
-
-function findAssignYourselfButton(): HTMLButtonElement | undefined {
-    return DOMUtils.findElementByInnerText({
-        innerText: ElementText.AssignYourself,
-        type: ElementType.Button,
-    });
-}
-
-function findAssigneeListItemByUsername(
-    username: string
-): HTMLElement | undefined {
-    const selector = `.${ClassName.AssigneeListItemUsername}` as const;
-    const listItems = DOMUtils.querySelectorAll(selector);
-
-    return (
-        DOMUtils.findElementByInnerText({
-            elements: listItems,
-            innerText: username,
-        })?.closest<HTMLElement>(ElementType.Label) ?? undefined
-    );
-}
-
 function toggleAssigneesPopover(): void {
-    const assigneesPopover = findAssigneesPopoverTrigger();
+    const assigneesPopover = GithubDOMUtils.findAssigneesPopoverTrigger();
     assigneesPopover?.click();
 }
 
 function assignUserViaPopover(username: string): void {
-    const userListItem = findAssigneeListItemByUsername(username);
+    const userListItem =
+        GithubDOMUtils.findAssigneeListItemByUsername(username);
     if (userListItem?.ariaChecked === true.toString()) {
         return;
     }
