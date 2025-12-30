@@ -4,9 +4,13 @@ Browser extension with additional GitHub functionality. You probably don't need 
 
 ## Features
 
-- Auto assign self to pull request
+- Auto assign to pull request
 
-![](./docs/demos/auto-assign.gif)
+![](./docs/demos/auto-assign-to-pull-request.gif)
+
+- Auto add ticket number from branch name to pull request title
+
+![](./docs/demos/auto-add-ticket-number-to-pull-request-title.gif)
 
 ## Installation
 
