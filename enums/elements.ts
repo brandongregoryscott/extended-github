@@ -7,6 +7,7 @@ const ElementType = {
 
 const ElementText = {
     AssignYourself: "assign yourself",
+    Save: "Save",
 } as const;
 
 export { ElementText, ElementType };

@@ -5,14 +5,14 @@ const PULL_REQUEST_MATCH_PATTERN = new MatchPattern(PULL_REQUEST_URL_PATTERN);
 
 const contentScript = defineContentScript({
     async main(ctx) {
-        await PullRequests.autoAssignAuthor();
+        await PullRequests.runScripts();
 
         ctx.addEventListener(
             window,
             "wxt:locationchange",
             async ({ newUrl }) => {
                 if (PULL_REQUEST_MATCH_PATTERN.includes(newUrl)) {
-                    await PullRequests.autoAssignAuthor();
+                    await PullRequests.runScripts();
                 }
             }
         );

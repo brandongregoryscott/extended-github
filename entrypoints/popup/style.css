@@ -7,6 +7,10 @@ body,
   user-select: none;
 }
 
+details {
+  margin-bottom: 0;
+}
+
 details[open] {
   summary {
     border-bottom: var(--border-width) solid var(--border);
@@ -48,6 +52,10 @@ textarea {
 
 .gap-md {
   gap: 8px;
+}
+
+.gap-lg {
+  gap: 16px;
 }
 
 .display-flex {

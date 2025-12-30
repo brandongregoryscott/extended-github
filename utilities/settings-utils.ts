@@ -1,5 +1,7 @@
-import { compact, get as lodashGet, isEmpty, merge } from "lodash-es";
+import { compact, isEmpty, merge } from "lodash-es";
+import type { UserGroup } from "@/enums";
 import type { DeepPartial } from "@/types";
+import { UserGroups } from "@/enums";
 import { RouteUtils } from "@/utilities/route-utils";
 
 type Settings = {
@@ -25,22 +27,22 @@ type FeatureSettings = {
 
 type PullRequestFeatureSettings = {
     /**
-     * Whether to automatically assign the pull request author, including other users
+     * Automatically add ticket number to title
      */
-    autoAssignAuthorEnabled: boolean;
+    autoAddTicketToTitle: false | UserGroup;
 
     /**
-     * Whether to automatically assign your own user to a pull request you authored
+     * Automatically assign the pull request author
      */
-    autoAssignSelfEnabled: boolean;
+    autoAssignAuthor: false | UserGroup;
 };
 
 const DEFAULT_SETTINGS: Settings = {
     enabled: true,
     features: {
         pullRequest: {
-            autoAssignAuthorEnabled: true,
-            autoAssignSelfEnabled: true,
+            autoAddTicketToTitle: UserGroups.Self,
+            autoAssignAuthor: UserGroups.Self,
         },
     },
     includedOrganizations: [],
@@ -65,6 +67,26 @@ class SettingsUtils {
             includedOrganizations.includes(organization);
 
         return enabledByOrganization;
+    }
+
+    static async isAutoAssignAuthorEnabled(): Promise<false | UserGroup> {
+        const globallyEnabled = await this.isEnabled();
+        if (!globallyEnabled) {
+            return false;
+        }
+
+        const settings = await this.getSettings();
+        return settings.features.pullRequest.autoAssignAuthor;
+    }
+
+    static async isAutoAddTicketToTitleEnabled(): Promise<false | UserGroup> {
+        const globallyEnabled = await this.isEnabled();
+        if (!globallyEnabled) {
+            return false;
+        }
+
+        const settings = await this.getSettings();
+        return settings.features.pullRequest.autoAddTicketToTitle;
     }
 
     static getDefaultSettings(): Settings {

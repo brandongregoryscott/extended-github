@@ -1,8 +1,9 @@
 import type { ObjectValues } from "@/types";
+import { brand } from "@/utilities/core-utils";
 
 const UserGroups = {
-    Everyone: "everyone",
-    Self: "self",
+    Author: brand("author"),
+    Self: brand("self"),
 } as const;
 
 type UserGroup = ObjectValues<typeof UserGroups>;
