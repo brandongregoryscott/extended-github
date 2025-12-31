@@ -1,23 +1,26 @@
 import { PullRequests } from "@/features/pull-requests";
-
-const PULL_REQUEST_URL_PATTERN = "*://github.com/*/*/pull/*";
-const PULL_REQUEST_MATCH_PATTERN = new MatchPattern(PULL_REQUEST_URL_PATTERN);
+import { RouteUtils } from "@/utilities/route-utils";
 
 const contentScript = defineContentScript({
     async main(ctx) {
         await PullRequests.runScripts();
-
         ctx.addEventListener(
             window,
             "wxt:locationchange",
             async ({ newUrl }) => {
-                if (PULL_REQUEST_MATCH_PATTERN.includes(newUrl)) {
+                if (
+                    RouteUtils.matchesExistingPullRequestUrl(newUrl) ||
+                    RouteUtils.matchesNewPullRequestUrl(newUrl)
+                ) {
                     await PullRequests.runScripts();
                 }
             }
         );
     },
-    matches: [PULL_REQUEST_URL_PATTERN],
+    matches: [
+        RouteUtils.EXISTING_PULL_REQUEST_URL_PATTERN,
+        RouteUtils.NEW_PULL_REQUEST_URL_PATTERN,
+    ],
 });
 
 // eslint-disable-next-line collation/no-default-export -- This module needs to be default exported

@@ -1,6 +1,13 @@
 import { isString } from "lodash-es";
-import { AttributeName, AttributeValue, ClassName, ElementType } from "@/enums";
+import {
+    AttributeName,
+    AttributeValue,
+    ClassName,
+    ElementId,
+    ElementType,
+} from "@/enums";
 import { DOMUtils } from "@/utilities/dom-utils";
+import { RouteUtils } from "@/utilities/route-utils";
 
 /**
  * Class for returning data (not elements) based on the Github DOM.
@@ -22,16 +29,37 @@ class GithubUtils {
     }
 
     static getPullRequestBranchName(): string | undefined {
-        const selector = `.${ClassName.BranchName}`;
-        return DOMUtils.querySelector(selector)?.innerText;
+        if (RouteUtils.matchesNewPullRequestUrl()) {
+            const newPullRequestSelector =
+                `#${ElementId.HeadBranchSelector} [${AttributeName.DataMenuButton}]` as const;
+            return DOMUtils.querySelector(newPullRequestSelector)?.innerText;
+        }
+
+        const existingPullRequestSelector = `.${ClassName.BranchName}` as const;
+        return DOMUtils.querySelector(existingPullRequestSelector)?.innerText;
     }
 
     static getPullRequestTitle(): string | undefined {
-        const selector = `.${ClassName.PullRequestTitle}`;
-        return DOMUtils.querySelector(selector)?.innerText?.trim();
+        if (RouteUtils.matchesNewPullRequestUrl()) {
+            const newPullRequestSelector =
+                `.${ClassName.PullRequestTitleInput}` as const;
+            return DOMUtils.querySelector<HTMLInputElement>(
+                newPullRequestSelector
+            )?.value.trim();
+        }
+
+        const existingPullRequestSelector =
+            `.${ClassName.PullRequestTitle}` as const;
+        return DOMUtils.querySelector(
+            existingPullRequestSelector
+        )?.innerText?.trim();
     }
 
     static getPullRequestAuthorUsername(): string | undefined {
+        if (RouteUtils.matchesNewPullRequestUrl()) {
+            return this.getAuthenticatedUsername();
+        }
+
         const selector = `${ElementType.Anchor}.${ClassName.Author}` as const;
         const authorLink = DOMUtils.querySelector<HTMLElement>(selector);
         if (authorLink == null) {
