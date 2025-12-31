@@ -5,9 +5,13 @@ const ElementType = {
     Meta: "meta",
 } as const;
 
+const ElementId = {
+    HeadBranchSelector: "head-ref-selector",
+} as const;
+
 const ElementText = {
     AssignYourself: "assign yourself",
     Save: "Save",
 } as const;
 
-export { ElementText, ElementType };
+export { ElementId, ElementText, ElementType };

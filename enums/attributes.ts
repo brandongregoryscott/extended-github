@@ -1,4 +1,5 @@
 const AttributeName = {
+    DataMenuButton: "data-menu-button",
     DataMenuTrigger: "data-menu-trigger",
     Name: "name",
 } as const;
