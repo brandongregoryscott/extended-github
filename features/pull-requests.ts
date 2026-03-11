@@ -2,6 +2,7 @@ import { UserGroups } from "@/enums";
 import { sleep } from "@/utilities/core-utils";
 import { GithubDOMUtils } from "@/utilities/github-dom-utils";
 import { GithubUtils } from "@/utilities/github-utils";
+import { Logger } from "@/utilities/logger";
 import { SettingsUtils } from "@/utilities/settings-utils";
 import { StringUtils } from "@/utilities/string-utils";
 
@@ -20,6 +21,10 @@ class PullRequests {
         const authenticatedUser = GithubUtils.getAuthenticatedUsername();
         const pullRequestAuthor = GithubUtils.getPullRequestAuthorUsername();
         if (authenticatedUser == null || pullRequestAuthor == null) {
+            Logger.warn("autoAssignAuthor: missing usernames", {
+                authenticatedUser,
+                pullRequestAuthor,
+            });
             return;
         }
 
@@ -39,6 +44,10 @@ class PullRequests {
         const authenticatedUser = GithubUtils.getAuthenticatedUsername();
         const pullRequestAuthor = GithubUtils.getPullRequestAuthorUsername();
         if (authenticatedUser == null || pullRequestAuthor == null) {
+            Logger.warn("autoAddTicketToTitle: missing usernames", {
+                authenticatedUser,
+                pullRequestAuthor,
+            });
             return;
         }
 
@@ -51,11 +60,15 @@ class PullRequests {
 
         const branchName = GithubUtils.getPullRequestBranchName();
         if (branchName == null) {
+            Logger.warn("autoAddTicketToTitle: missing branch name");
             return;
         }
 
         const ticketNumber = StringUtils.parseTicketNumber(branchName);
         if (ticketNumber == null) {
+            Logger.warn("autoAddTicketToTitle: missing ticket number", {
+                branchName,
+            });
             return;
         }
 
@@ -64,20 +77,32 @@ class PullRequests {
             pullRequestTitle == null ||
             pullRequestTitle.endsWith(ticketNumber)
         ) {
+            if (pullRequestTitle == null) {
+                Logger.warn("autoAddTicketToTitle: missing pull request title");
+            }
             return;
         }
 
         const editTitleButton = GithubDOMUtils.findEditPullRequestTitleButton();
+        if (editTitleButton == null) {
+            Logger.warn("autoAddTicketToTitle: missing edit title button");
+            return;
+        }
         editTitleButton?.click();
         await sleep(250);
         const titleInput = GithubDOMUtils.findPullRequestTitleInput();
         if (titleInput == null) {
+            Logger.warn("autoAddTicketToTitle: missing title input");
             return;
         }
 
         const updatedTitle = `${pullRequestTitle} ${ticketNumber}`;
         titleInput.value = updatedTitle;
         const saveButton = GithubDOMUtils.findSaveButton();
+        if (saveButton == null) {
+            Logger.warn("autoAddTicketToTitle: missing save button");
+            return;
+        }
         saveButton?.click();
     }
 }
@@ -93,6 +118,9 @@ async function autoAssignUser(username: string): Promise<void> {
     if (username === authenticatedUser && assignYourselfButton != null) {
         assignYourselfButton.click();
         return;
+    }
+    if (username === authenticatedUser && assignYourselfButton == null) {
+        Logger.warn("autoAssignUser: missing assign-yourself button");
     }
 
     // We need to toggle open & close the popover for the users to actually load. If we just open it
@@ -125,12 +153,20 @@ async function autoAssignSelf(): Promise<void> {
 
 function toggleAssigneesPopover(): void {
     const assigneesPopover = GithubDOMUtils.findAssigneesPopoverTrigger();
+    if (assigneesPopover == null) {
+        Logger.warn("autoAssignUser: missing assignees popover trigger");
+        return;
+    }
     assigneesPopover?.click();
 }
 
 function assignUserViaPopover(username: string): void {
     const userListItem =
         GithubDOMUtils.findAssigneeListItemByUsername(username);
+    if (userListItem == null) {
+        Logger.warn("autoAssignUser: missing user list item", { username });
+        return;
+    }
     if (userListItem?.ariaChecked === true.toString()) {
         return;
     }
