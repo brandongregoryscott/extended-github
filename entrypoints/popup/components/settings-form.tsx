@@ -14,13 +14,14 @@ const InputId = {
     AutoAddTicketToPullRequestTitle:
         "input-auto-add-ticket-to-pull-request-title",
     AutoAssignAuthorToPullRequest: "input-auto-assign-author-to-pull-request",
+    DebugLogging: "input-debug-logging",
     Enabled: "input-enabled",
     IncludedOrganizations: "input-included-organizations",
 } as const;
 
 function SettingsForm() {
     const { setSettings, settings } = useSettings();
-    const { enabled, features } = settings;
+    const { debugLogging, enabled, features } = settings;
     const includedOrganizations = joinCsv(settings.includedOrganizations);
     const handleEnabledChange = (enabled: boolean) => {
         setSettings({ enabled });
@@ -43,6 +44,10 @@ function SettingsForm() {
         autoAddTicketToTitle: false | UserGroup
     ) => {
         setSettings({ features: { pullRequest: { autoAddTicketToTitle } } });
+    };
+
+    const handleDebugLoggingChange = (debugLogging: boolean) => {
+        setSettings({ debugLogging });
     };
 
     const disabled = !enabled;
@@ -73,6 +78,17 @@ function SettingsForm() {
                             id={InputId.IncludedOrganizations}
                             onChange={handleIncludedOrganizationsChange}
                             value={includedOrganizations}
+                        />
+                    </FormField>
+                    <FormField
+                        description="Enables logging to help debug UI changes that might break extension features."
+                        inputId={InputId.DebugLogging}
+                        label="Debug logging">
+                        <Checkbox
+                            id={InputId.DebugLogging}
+                            label="Enabled"
+                            onChange={handleDebugLoggingChange}
+                            value={debugLogging}
                         />
                     </FormField>
                 </div>

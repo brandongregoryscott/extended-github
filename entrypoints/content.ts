@@ -1,8 +1,10 @@
 import { PullRequests } from "@/features/pull-requests";
+import { Logger } from "@/utilities/logger";
 import { RouteUtils } from "@/utilities/route-utils";
 
 const contentScript = defineContentScript({
     async main(ctx) {
+        await Logger.refresh();
         await PullRequests.runScripts();
         ctx.addEventListener(
             window,
@@ -12,6 +14,7 @@ const contentScript = defineContentScript({
                     RouteUtils.matchesExistingPullRequestUrl(newUrl) ||
                     RouteUtils.matchesNewPullRequestUrl(newUrl)
                 ) {
+                    await Logger.refresh();
                     await PullRequests.runScripts();
                 }
             }

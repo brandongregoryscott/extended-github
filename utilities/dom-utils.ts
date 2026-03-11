@@ -1,3 +1,5 @@
+import { Logger } from "@/utilities/logger";
+
 type FindElementByInnerTextOptions<T extends HTMLElement = HTMLElement> =
     | { elements: T[]; innerText: string }
     | { innerText: string; type: keyof HTMLElementTagNameMap }
@@ -9,28 +11,62 @@ class DOMUtils {
     ): T | undefined {
         const { innerText } = options;
         if ("elements" in options) {
-            return this.findByInnerText<T>(options.elements, innerText);
+            const match = this.findByInnerText<T>(options.elements, innerText);
+            if (match == null) {
+                Logger.warn("DOMUtils.findElementByInnerText: no match", {
+                    elements: options.elements.length,
+                    innerText,
+                });
+            }
+            return match;
         }
 
         if ("type" in options) {
             const elements = this.querySelectorAll<T>(options.type);
-            return this.findByInnerText(elements, innerText);
+            const match = this.findByInnerText(elements, innerText);
+            if (match == null) {
+                Logger.warn("DOMUtils.findElementByInnerText: no match", {
+                    elements: elements.length,
+                    innerText,
+                    type: options.type,
+                });
+            }
+            return match;
         }
 
         const elements = Array.from(document.getElementsByTagName("*")) as T[];
-        return this.findByInnerText(elements, innerText);
+        const match = this.findByInnerText(elements, innerText);
+        if (match == null) {
+            Logger.warn("DOMUtils.findElementByInnerText: no match", {
+                elements: elements.length,
+                innerText,
+            });
+        }
+        return match;
     }
 
     static querySelector<T extends HTMLElement = HTMLElement>(
         selectors: string
     ): T | undefined {
-        return document.querySelector<T>(selectors) ?? undefined;
+        const element = document.querySelector<T>(selectors) ?? undefined;
+        if (element == null) {
+            Logger.warn("DOMUtils.querySelector: element not found", {
+                selectors,
+            });
+        }
+        return element;
     }
 
     static querySelectorAll<T extends HTMLElement = HTMLElement>(
         selectors: string
     ): T[] {
-        return Array.from(document.querySelectorAll<T>(selectors));
+        const elements = Array.from(document.querySelectorAll<T>(selectors));
+        if (elements.length === 0) {
+            Logger.warn("DOMUtils.querySelectorAll: no elements found", {
+                selectors,
+            });
+        }
+        return elements;
     }
 
     private static findByInnerText<T extends HTMLElement = HTMLElement>(

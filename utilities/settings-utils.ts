@@ -6,6 +6,11 @@ import { RouteUtils } from "@/utilities/route-utils";
 
 type Settings = {
     /**
+     * Enables debug logging for DOM queries and scripts.
+     */
+    debugLogging: boolean;
+
+    /**
      * Globally enables or disables the extension.
      */
     enabled: boolean;
@@ -38,6 +43,7 @@ type PullRequestFeatureSettings = {
 };
 
 const DEFAULT_SETTINGS: Settings = {
+    debugLogging: false,
     enabled: true,
     features: {
         pullRequest: {
@@ -87,6 +93,11 @@ class SettingsUtils {
 
         const settings = await this.getSettings();
         return settings.features.pullRequest.autoAddTicketToTitle;
+    }
+
+    static async isDebugLoggingEnabled(): Promise<boolean> {
+        const settings = await this.getSettings();
+        return settings.debugLogging;
     }
 
     static getDefaultSettings(): Settings {
