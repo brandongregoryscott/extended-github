@@ -43,7 +43,7 @@ type PullRequestFeatureSettings = {
 };
 
 const DEFAULT_SETTINGS: Settings = {
-    debugLogging: false,
+    debugLogging: true,
     enabled: true,
     features: {
         pullRequest: {

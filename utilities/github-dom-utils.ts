@@ -12,12 +12,26 @@ import { DOMUtils } from "@/utilities/dom-utils";
  */
 class GithubDOMUtils {
     static findEditPullRequestTitleButton(): HTMLButtonElement | undefined {
-        const selector = `.${ClassName.PullRequestEditTitleButton}`;
+        const selector = `[${AttributeName.DataComponent}="${AttributeValue.ExistingPullRequestTitle}"] [${AttributeName.DataComponent}="${AttributeValue.IconButton}"]`;
         return DOMUtils.querySelector(selector);
     }
 
     static findPullRequestTitleInput(): HTMLInputElement | undefined {
-        const selector = `.${ClassName.PullRequestTitleInput}`;
+        return (
+            this.findNewPullRequestTitleInput() ??
+            this.findExistingPullRequestTitleInput()
+        );
+    }
+
+    static findNewPullRequestTitleInput(): HTMLInputElement | undefined {
+        const selector =
+            `[${AttributeName.Name}="${AttributeValue.NewPullRequestTitle}"]` as const;
+        return DOMUtils.querySelector(selector);
+    }
+
+    static findExistingPullRequestTitleInput(): HTMLInputElement | undefined {
+        const selector =
+            `${ElementType.ReactApp} ${ElementType.Form} ${ElementType.Input}` as const;
         return DOMUtils.querySelector(selector);
     }
 
