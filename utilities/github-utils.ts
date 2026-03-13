@@ -8,6 +8,7 @@ import {
 } from "@/enums";
 import { DOMUtils } from "@/utilities/dom-utils";
 import { GithubDOMUtils } from "@/utilities/github-dom-utils";
+import { Logger } from "@/utilities/logger";
 import { RouteUtils } from "@/utilities/route-utils";
 
 const DEFAULT_BRANCH_NAMES = ["main", "master"] as const;
@@ -48,14 +49,12 @@ class GithubUtils {
 
     static getPullRequestTitle(): string | undefined {
         if (RouteUtils.matchesNewPullRequestUrl()) {
-            return GithubDOMUtils.findPullRequestTitleInput()?.value.trim();
+            return GithubDOMUtils.findNewPullRequestTitleInput()?.value.trim();
         }
 
-        const existingPullRequestSelector =
-            `.${ClassName.PullRequestTitle}` as const;
-        return DOMUtils.querySelector(
-            existingPullRequestSelector
-        )?.innerText?.trim();
+        const selector =
+            `[${AttributeName.DataComponent}="${AttributeValue.ExistingPullRequestTitle}"] ${ElementType.Span}` as const;
+        return DOMUtils.querySelector(selector)?.innerText?.trim();
     }
 
     static getPullRequestAuthorUsername(): string | undefined {
