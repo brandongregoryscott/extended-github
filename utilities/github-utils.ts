@@ -7,6 +7,7 @@ import {
     ElementType,
 } from "@/enums";
 import { DOMUtils } from "@/utilities/dom-utils";
+import { GithubDOMUtils } from "@/utilities/github-dom-utils";
 import { RouteUtils } from "@/utilities/route-utils";
 
 /**
@@ -41,11 +42,7 @@ class GithubUtils {
 
     static getPullRequestTitle(): string | undefined {
         if (RouteUtils.matchesNewPullRequestUrl()) {
-            const newPullRequestSelector =
-                `.${ClassName.PullRequestTitleInput}` as const;
-            return DOMUtils.querySelector<HTMLInputElement>(
-                newPullRequestSelector
-            )?.value.trim();
+            return GithubDOMUtils.findPullRequestTitleInput()?.value.trim();
         }
 
         const existingPullRequestSelector =

@@ -17,7 +17,8 @@ class GithubDOMUtils {
     }
 
     static findPullRequestTitleInput(): HTMLInputElement | undefined {
-        const selector = `.${ClassName.PullRequestTitleInput}`;
+        const selector =
+            `[${AttributeName.Name}="${AttributeValue.NewPullRequestTitle}"]` as const;
         return DOMUtils.querySelector(selector);
     }
 

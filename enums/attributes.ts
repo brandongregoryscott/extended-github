@@ -6,6 +6,7 @@ const AttributeName = {
 
 const AttributeValue = {
     AssigneesSelectMenu: "assignees-select-menu",
+    NewPullRequestTitle: "pull_request[title]",
     UserLogin: "user-login",
 } as const;
 

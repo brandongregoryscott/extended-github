@@ -86,7 +86,6 @@ class PullRequests {
         const editTitleButton = GithubDOMUtils.findEditPullRequestTitleButton();
         if (editTitleButton == null) {
             Logger.warn("autoAddTicketToTitle: missing edit title button");
-            return;
         }
         editTitleButton?.click();
         await sleep(250);
@@ -96,6 +95,10 @@ class PullRequests {
             return;
         }
 
+        Logger.debug("autoAddTicketToTitle: updating title", {
+            pullRequestTitle,
+            ticketNumber,
+        });
         const updatedTitle = `${pullRequestTitle} ${ticketNumber}`;
         titleInput.value = updatedTitle;
         const saveButton = GithubDOMUtils.findSaveButton();
