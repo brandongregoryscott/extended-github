@@ -10,6 +10,11 @@ import { DOMUtils } from "@/utilities/dom-utils";
 import { GithubDOMUtils } from "@/utilities/github-dom-utils";
 import { RouteUtils } from "@/utilities/route-utils";
 
+const DEFAULT_BRANCH_NAMES = ["main", "master"] as const;
+const NOT_DEFAULT_BRANCH_SELECTORS = DEFAULT_BRANCH_NAMES.map((branchName) =>
+    not(anchorContainsBranchHref(branchName))
+);
+
 /**
  * Class for returning data (not elements) based on the Github DOM.
  */
@@ -36,7 +41,8 @@ class GithubUtils {
             return DOMUtils.querySelector(newPullRequestSelector)?.innerText;
         }
 
-        const existingPullRequestSelector = `.${ClassName.BranchName}` as const;
+        const existingPullRequestSelector =
+            `${anchorContainsBranchHref()}${NOT_DEFAULT_BRANCH_SELECTORS.join("")}` as const;
         return DOMUtils.querySelector(existingPullRequestSelector)?.innerText;
     }
 
@@ -80,6 +86,16 @@ class GithubUtils {
             }) != null
         );
     }
+}
+
+function anchorContainsBranchHref<TBranchName extends string>(
+    branchName?: TBranchName
+) {
+    return `${ElementType.Anchor}[${AttributeName.Href}*="/tree/${branchName ?? ""}"]` as const;
+}
+
+function not<TSelector extends string>(selector: TSelector) {
+    return `:not(${selector})` as const;
 }
 
 export { GithubUtils };
