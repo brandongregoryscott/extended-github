@@ -1,7 +1,15 @@
 import { compact, isEmpty, merge } from "lodash-es";
-import type { UserGroup } from "@/enums";
+import type {
+    TicketNumberInsertPosition,
+    TicketNumberPosition,
+    UserGroup,
+} from "@/enums";
 import type { DeepPartial } from "@/types";
-import { UserGroups } from "@/enums";
+import {
+    TicketNumberInsertPositions,
+    TicketNumberPositions,
+    UserGroups,
+} from "@/enums";
 import { RouteUtils } from "@/utilities/route-utils";
 
 type Settings = {
@@ -42,6 +50,17 @@ type PullRequestFeatureSettings = {
     autoAssignAuthor: false | UserGroup;
 
     /**
+     * When `ticketNumberPosition` is `Includes`, controls where the ticket number is inserted
+     * into the title if it is not already present.
+     */
+    ticketNumberInsertPosition: TicketNumberInsertPosition;
+
+    /**
+     * Controls where the existing title is checked for the ticket number.
+     */
+    ticketNumberPosition: TicketNumberPosition;
+
+    /**
      * List of allowed ticket/project prefixes (e.g., ABC, DEF). When empty, any prefix matching
      * the default pattern will be allowed.
      */
@@ -55,6 +74,8 @@ const DEFAULT_SETTINGS: Settings = {
         pullRequest: {
             autoAddTicketToTitle: UserGroups.Self,
             autoAssignAuthor: UserGroups.Self,
+            ticketNumberInsertPosition: TicketNumberInsertPositions.End,
+            ticketNumberPosition: TicketNumberPositions.Includes,
             ticketPrefixes: [],
         },
     },
@@ -105,6 +126,16 @@ class SettingsUtils {
     static async getTicketPrefixes(): Promise<string[]> {
         const settings = await this.getSettings();
         return settings.features.pullRequest.ticketPrefixes;
+    }
+
+    static async getTicketNumberPosition(): Promise<TicketNumberPosition> {
+        const settings = await this.getSettings();
+        return settings.features.pullRequest.ticketNumberPosition;
+    }
+
+    static async getTicketNumberInsertPosition(): Promise<TicketNumberInsertPosition> {
+        const settings = await this.getSettings();
+        return settings.features.pullRequest.ticketNumberInsertPosition;
     }
 
     static async isDebugLoggingEnabled(): Promise<boolean> {
