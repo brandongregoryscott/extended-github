@@ -17,12 +17,14 @@ const InputId = {
     DebugLogging: "input-debug-logging",
     Enabled: "input-enabled",
     IncludedOrganizations: "input-included-organizations",
+    TicketPrefixes: "input-ticket-prefixes",
 } as const;
 
 function SettingsForm() {
     const { setSettings, settings } = useSettings();
     const { debugLogging, enabled, features } = settings;
     const includedOrganizations = joinCsv(settings.includedOrganizations);
+    const ticketPrefixes = joinCsv(features.pullRequest.ticketPrefixes);
     const handleEnabledChange = (enabled: boolean) => {
         setSettings({ enabled });
     };
@@ -44,6 +46,15 @@ function SettingsForm() {
         autoAddTicketToTitle: false | UserGroup
     ) => {
         setSettings({ features: { pullRequest: { autoAddTicketToTitle } } });
+    };
+
+    const handleTicketPrefixesChange = (
+        event: React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+        const value = event.target.value;
+        setSettings({
+            features: { pullRequest: { ticketPrefixes: splitCsv(value) } },
+        });
     };
 
     const handleDebugLoggingChange = (debugLogging: boolean) => {
@@ -113,6 +124,18 @@ function SettingsForm() {
                             id={InputId.AutoAddTicketToPullRequestTitle}
                             onChange={handleAutoAddTicketToTitleChange}
                             value={features.pullRequest.autoAddTicketToTitle}
+                        />
+                    </FormField>
+                    <FormField
+                        description="Comma-separated list of allowed ticket prefixes (e.g., ABC,DEF,XYZ). When empty, any prefix matching the default pattern will be allowed."
+                        disabled={disabled}
+                        inputId={InputId.TicketPrefixes}
+                        label="Ticket prefixes">
+                        <textarea
+                            disabled={disabled}
+                            id={InputId.TicketPrefixes}
+                            onChange={handleTicketPrefixesChange}
+                            value={ticketPrefixes}
                         />
                     </FormField>
                 </div>

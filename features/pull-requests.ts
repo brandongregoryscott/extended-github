@@ -64,10 +64,15 @@ class PullRequests {
             return;
         }
 
-        const ticketNumber = StringUtils.parseTicketNumber(branchName);
+        const ticketPrefixes = await SettingsUtils.getTicketPrefixes();
+        const ticketNumber = StringUtils.parseTicketNumber(
+            branchName,
+            ticketPrefixes
+        );
         if (ticketNumber == null) {
             Logger.warn("autoAddTicketToTitle: missing ticket number", {
                 branchName,
+                ticketPrefixes,
             });
             return;
         }
