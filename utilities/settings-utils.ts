@@ -40,6 +40,12 @@ type PullRequestFeatureSettings = {
      * Automatically assign the pull request author
      */
     autoAssignAuthor: false | UserGroup;
+
+    /**
+     * List of allowed ticket/project prefixes (e.g., ABC, DEF). When empty, any prefix matching
+     * the default pattern will be allowed.
+     */
+    ticketPrefixes: string[];
 };
 
 const DEFAULT_SETTINGS: Settings = {
@@ -49,6 +55,7 @@ const DEFAULT_SETTINGS: Settings = {
         pullRequest: {
             autoAddTicketToTitle: UserGroups.Self,
             autoAssignAuthor: UserGroups.Self,
+            ticketPrefixes: [],
         },
     },
     includedOrganizations: [],
@@ -95,6 +102,11 @@ class SettingsUtils {
         return settings.features.pullRequest.autoAddTicketToTitle;
     }
 
+    static async getTicketPrefixes(): Promise<string[]> {
+        const settings = await this.getSettings();
+        return settings.features.pullRequest.ticketPrefixes;
+    }
+
     static async isDebugLoggingEnabled(): Promise<boolean> {
         const settings = await this.getSettings();
         return settings.debugLogging;
@@ -109,6 +121,15 @@ class SettingsUtils {
             await browser.storage.sync.get<Settings>(DEFAULT_SETTINGS);
         return {
             ...settings,
+            features: {
+                ...settings.features,
+                pullRequest: {
+                    ...settings.features.pullRequest,
+                    ticketPrefixes: compact(
+                        settings.features.pullRequest.ticketPrefixes
+                    ),
+                },
+            },
             includedOrganizations: compact(settings.includedOrganizations),
         };
     }
