@@ -1,4 +1,9 @@
-import { UserGroups } from "@/enums";
+import type { TicketNumberPosition } from "@/enums";
+import {
+    TicketNumberInsertPositions,
+    TicketNumberPositions,
+    UserGroups,
+} from "@/enums";
 import { sleep } from "@/utilities/core-utils";
 import { GithubDOMUtils } from "@/utilities/github-dom-utils";
 import { GithubUtils } from "@/utilities/github-utils";
@@ -78,13 +83,20 @@ class PullRequests {
         }
 
         const pullRequestTitle = GithubUtils.getPullRequestTitle();
+        if (pullRequestTitle == null) {
+            Logger.warn("autoAddTicketToTitle: missing pull request title");
+            return;
+        }
+
+        const ticketNumberPosition =
+            await SettingsUtils.getTicketNumberPosition();
         if (
-            pullRequestTitle == null ||
-            pullRequestTitle.endsWith(ticketNumber)
+            titleHasTicketNumberAtPosition(
+                pullRequestTitle,
+                ticketNumber,
+                ticketNumberPosition
+            )
         ) {
-            if (pullRequestTitle == null) {
-                Logger.warn("autoAddTicketToTitle: missing pull request title");
-            }
             return;
         }
 
@@ -100,11 +112,21 @@ class PullRequests {
             return;
         }
 
+        const ticketNumberInsertPosition =
+            ticketNumberPosition === TicketNumberPositions.Includes
+                ? await SettingsUtils.getTicketNumberInsertPosition()
+                : positionToInsertPosition(ticketNumberPosition);
+
         Logger.debug("autoAddTicketToTitle: updating title", {
             pullRequestTitle,
             ticketNumber,
+            ticketNumberInsertPosition,
+            ticketNumberPosition,
         });
-        const updatedTitle = `${pullRequestTitle} ${ticketNumber}`;
+        const updatedTitle =
+            ticketNumberInsertPosition === TicketNumberInsertPositions.Start
+                ? `${ticketNumber} ${pullRequestTitle}`
+                : `${pullRequestTitle} ${ticketNumber}`;
         titleInput.value = updatedTitle;
         titleInput.dispatchEvent(new Event("input", { bubbles: true }));
         titleInput.dispatchEvent(new Event("change", { bubbles: true }));
@@ -159,6 +181,26 @@ async function autoAssignSelf(): Promise<void> {
     }
 
     return autoAssignUser(authenticatedUsername);
+}
+
+function titleHasTicketNumberAtPosition(
+    title: string,
+    ticketNumber: string,
+    position: TicketNumberPosition
+): boolean {
+    if (position === TicketNumberPositions.StartsWith) {
+        return title.startsWith(ticketNumber);
+    }
+    if (position === TicketNumberPositions.Includes) {
+        return title.includes(ticketNumber);
+    }
+    return title.endsWith(ticketNumber);
+}
+
+function positionToInsertPosition(position: TicketNumberPosition) {
+    return position === TicketNumberPositions.StartsWith
+        ? TicketNumberInsertPositions.Start
+        : TicketNumberInsertPositions.End;
 }
 
 function toggleAssigneesPopover(): void {

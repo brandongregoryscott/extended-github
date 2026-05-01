@@ -1,12 +1,19 @@
 import React from "react";
-import type { UserGroup } from "@/enums";
+import type {
+    TicketNumberInsertPosition,
+    TicketNumberPosition,
+    UserGroup,
+} from "@/enums";
 import {
     Accordion,
     Checkbox,
     FormField,
     PullRequestUserGroupSelect,
+    TicketNumberInsertPositionSelect,
+    TicketNumberPositionSelect,
 } from "@/entrypoints/popup/components";
 import { useSettings } from "@/entrypoints/popup/hooks";
+import { TicketNumberPositions } from "@/enums";
 import { cn } from "@/utilities/class-names";
 import { joinCsv, splitCsv } from "@/utilities/core-utils";
 
@@ -17,6 +24,8 @@ const InputId = {
     DebugLogging: "input-debug-logging",
     Enabled: "input-enabled",
     IncludedOrganizations: "input-included-organizations",
+    TicketNumberInsertPosition: "input-ticket-number-insert-position",
+    TicketNumberPosition: "input-ticket-number-position",
     TicketPrefixes: "input-ticket-prefixes",
 } as const;
 
@@ -54,6 +63,22 @@ function SettingsForm() {
         const value = event.target.value;
         setSettings({
             features: { pullRequest: { ticketPrefixes: splitCsv(value) } },
+        });
+    };
+
+    const handleTicketNumberPositionChange = (
+        ticketNumberPosition: TicketNumberPosition
+    ) => {
+        setSettings({
+            features: { pullRequest: { ticketNumberPosition } },
+        });
+    };
+
+    const handleTicketNumberInsertPositionChange = (
+        ticketNumberInsertPosition: TicketNumberInsertPosition
+    ) => {
+        setSettings({
+            features: { pullRequest: { ticketNumberInsertPosition } },
         });
     };
 
@@ -138,6 +163,38 @@ function SettingsForm() {
                             value={ticketPrefixes}
                         />
                     </FormField>
+                    <FormField
+                        description="Controls how the title is checked for the ticket number before the extension adds it."
+                        disabled={disabled}
+                        inputId={InputId.TicketNumberPosition}
+                        label="Ticket number position">
+                        <TicketNumberPositionSelect
+                            disabled={disabled}
+                            id={InputId.TicketNumberPosition}
+                            onChange={handleTicketNumberPositionChange}
+                            value={features.pullRequest.ticketNumberPosition}
+                        />
+                    </FormField>
+                    {features.pullRequest.ticketNumberPosition ===
+                        TicketNumberPositions.Includes && (
+                        <FormField
+                            description="When the ticket number is missing, controls where it is inserted into the title."
+                            disabled={disabled}
+                            inputId={InputId.TicketNumberInsertPosition}
+                            label="Ticket number insert position">
+                            <TicketNumberInsertPositionSelect
+                                disabled={disabled}
+                                id={InputId.TicketNumberInsertPosition}
+                                onChange={
+                                    handleTicketNumberInsertPositionChange
+                                }
+                                value={
+                                    features.pullRequest
+                                        .ticketNumberInsertPosition
+                                }
+                            />
+                        </FormField>
+                    )}
                 </div>
             </Accordion>
         </div>
